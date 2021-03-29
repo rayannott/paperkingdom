@@ -1,2 +1,2 @@
 # paperkingdom
-Game dev
+Paper and pencil game development
