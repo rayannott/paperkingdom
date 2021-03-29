@@ -10,3 +10,9 @@ class Player:
         self.was_knight = was_knight
         self.blanks = blanks
         self.trace = trace
+
+    def get_trace(self):
+        return self.trace
+
+    def get_is_knight(self):
+        return self.is_knight
