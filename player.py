@@ -7,6 +7,7 @@ class Position:
         return '(' + str(self.x) + ', ' + str(self.y) + ')'
 
 
+# TODO: add options
 class Player:
     def __init__(self, is_knight, was_knight, blanks, trace, name):
         self.is_knight = is_knight

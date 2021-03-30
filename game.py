@@ -73,8 +73,7 @@ def is_knight(pos1, pos2):
 
 class Game:
     # TODO: [in __init__] a clever way to initialise a field configuration: number of players, size of the \
-    # field. (init_positions, (A times B))
-    # TODO: define is_move_possible using two
+    #  field. (init_positions, (A times B))
     def __init__(self, number_of_players):
 
         self.number_of_players = number_of_players
