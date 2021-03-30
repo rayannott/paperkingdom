@@ -3,6 +3,9 @@ class Position:
         self.x = x
         self.y = y
 
+    def __str__(self):
+        return '(' + str(self.x) + ', ' + str(self.y) + ')'
+
 
 class Player:
     def __init__(self, is_knight, was_knight, blanks, trace, name):
