@@ -18,15 +18,15 @@ class Cell:
 
     def is_player(self):
         if self.t[0] == 'p':
-            return True  # , int(self.t[1:])
+            return True, int(self.t[1:])
         else:
-            return False  # ,
+            return False, 0
 
     def is_shot(self):
         if self.t[0] == 'x':
-            return True  # , int(self.t[1:])
+            return True, int(self.t[1:])
         else:
-            return False  # ,
+            return False, 0
 
     def is_target(self):
         if self.t[0] == 't':
@@ -34,12 +34,15 @@ class Cell:
         else:
             return False
 
-    def is_trace(self, num):
+    def is_trace_used(self):
+        if self.t[-1] == 'u':
+            return True
+        else:
+            return False
+
+    def is_trace(self):
         if self.t[0] == 'o':
-            if self.t[-1] == 'u':
-                return True  # , int(self.t[1:-1]) + num
-            else:
-                return True  # , int(self.t[1:])
+            return True
         else:
             return False
 
@@ -69,21 +72,23 @@ def is_knight(pos1, pos2):
 
 
 class Game:
-    # TODO: [in __init__] a clever way to initialise a field configuration: number of players, size of the field
+    # TODO: [in __init__] a clever way to initialise a field configuration: number of players, size of the \
+    #  field. (init_positions, (A times B))
     def __init__(self, number_of_players):
 
         self.number_of_players = number_of_players
-        self.field = [[Cell('n-') for _ in range(board_x)] for _ in range(board_y)]
+        self.field = [[Cell('n-') for _ in range(board_y)] for _ in range(board_x)]
         # [positions[i] must be in a list here:
-        self.players = [Player(False, False, 0, [positions[i]], names[i]) for i in range(number_of_players)]
+        self.players = [Player(True, False, 0, [positions[i]], names[i]) for i in range(number_of_players)]
         self.current_move = 0
+        self.is_ended_local = False
         for ind, i in enumerate(self.players):
             self.field[positions[ind].x][positions[ind].y] = Cell('p' + str(ind))  # it has been Cell(i)
         # self.field[2][2] = Cell(p1)
         # self.field[5][5] = Cell(p2)
 
     def is_ended(self):
-        pass
+        return self.is_ended_local
 
     def get_field(self):
         return self.field
@@ -98,19 +103,18 @@ class Game:
 
         move_to_empty = self.field[m.x][m.y].is_empty()
         shoot_to_empty = self.field[s.x][s.y].is_empty()
-        shoot_blank = m.x + m.y == -2 and player.get_blanks() > 0
-        player_shot = self.field[s.x][s.y].is_player()
-        # TODO: catch attempts to shoot of move out of the field
+        shoot_blank = s.x + s.y == -2 and player.get_blanks() > 0
+        player_shot, _ = self.field[s.x][s.y].is_player()
+        # TODO: catch attempts to shoot or move out of the field
         if (is_king(m, pos) or player.get_is_knight() and is_knight(m, pos)) and move_to_empty:
-            # TODO: shouldn't it be s.x + s.y == -2 ?
             if is_knight(m, s) and (player_shot or shoot_to_empty or shoot_blank):
                 # TODO: blanks
                 if shoot_blank:
                     player.reduce_blanks()
                 # TODO: what if the player was shot
                 if player_shot:
-                    print('player was shot, but the game is still running')
-                    # something to do with is_ended()
+                    print('player was shot')
+                    self.is_ended_local = True
                 return True
             else:
                 return False
@@ -132,4 +136,4 @@ class Game:
 
             self.current_move += 1
         else:
-            raise ValueError
+            raise ValueError('Invalid move')

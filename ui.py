@@ -52,11 +52,10 @@ def game_cycle():
             g.execute_move(current_player_index, move)
         except ValueError as e:
             # it doesn't show anything otherwise
-            print(e, 'error?')
+            print(e)
             continue
         # ? is this to keep track of what player's move it is ? twice ?
         current_player_index = (current_player_index + 1) % NUM_PLAYERS
-        # TODO: temporarily comment this:
         game_ended = g.is_ended()
 
         f = g.get_field()
