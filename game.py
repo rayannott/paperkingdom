@@ -19,6 +19,8 @@ class Cell:
     'o1u' is a trace of a player 1 that has been used in a tetra
     'x0' is a shot made by a player 0
     'n-' is an empty cell
+    'w-' is a wall
+    't-' is a target
     """
 
     def __init__(self, t):
