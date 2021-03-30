@@ -1,4 +1,7 @@
 class Move:
+    # move is Position
+    # shoot is Position
+    # swap is Boolean
     def __init__(self, swap, move, shoot):
         self.swap = swap
         self.move = move

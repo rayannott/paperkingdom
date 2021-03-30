@@ -24,10 +24,11 @@ def get_move():
 def draw_field(field):
     for row in field:
         for cell in row:
-            if isinstance(cell.t, Player):
-                print(cell.t.name, end=' ')
-            else:
-                print(cell.t)
+            # if isinstance(cell.t, Player):
+            #     print(cell.t.name, end=' ')
+            # else:
+            #     print(cell.t)
+            print(cell.t, end=' ')
         print()
 
 
@@ -44,13 +45,18 @@ def game_cycle():
     draw_field(f)
 
     while not game_ended:
+        # let's print this out
+        print(current_player_index)
         move = get_move()
         try:
             g.execute_move(current_player_index, move)
         except ValueError as e:
-            print(e)
+            # it doesn't show anything otherwise
+            print(e, 'error?')
             continue
+        # ? is this to keep track of what player's move it is ? twice ?
         current_player_index = (current_player_index + 1) % NUM_PLAYERS
+        # TODO: temporarily comment this:
         game_ended = g.is_ended()
 
         f = g.get_field()

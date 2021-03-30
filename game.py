@@ -3,48 +3,114 @@ from player import Position
 
 
 class Cell:
+    """
+    The t parameter is a string; it has a form of <character,number,extra_parameters>
+    Here are some examples:
+    'p4' is a player 4
+    'o2' is a trace left by a player 2
+    'o1u' is a trace of a player 1 that has been used in a tetra
+    'x0' is a shot made by a player 0
+    'n-' is an empty cell
+    """
+
     def __init__(self, t):
         self.t = t
 
+    def is_player(self):
+        if self.t[0] == 'p':
+            return True  # , int(self.t[1:])
+        else:
+            return False  # ,
+
+    def is_shot(self):
+        if self.t[0] == 'x':
+            return True  # , int(self.t[1:])
+        else:
+            return False  # ,
+
+    def is_target(self):
+        if self.t[0] == 't':
+            return True
+        else:
+            return False
+
+    def is_trace(self, num):
+        if self.t[0] == 'o':
+            if self.t[-1] == 'u':
+                return True  # , int(self.t[1:-1]) + num
+            else:
+                return True  # , int(self.t[1:])
+        else:
+            return False
+
+    def is_empty(self):
+        if self.t[0] == 'n':
+            return True
+        else:
+            return False
+
+
+board_x, board_y = 8, 8
+positions = [Position(2, 2), Position(5, 5)]
+names = ['Alan', 'Bill']
+
+
+# is_king = lambda pos1, pos2: abs(pos1.x - pos2.x) <= 1 and abs(pos1.y - pos2.y) <= 1
+# is_knight = lambda pos1, pos2: abs(pos1.x - pos2.x) * abs(pos1.y - pos2.y) == 2
+
+# if two positions given are a KING away from one another
+def is_king(pos1, pos2):
+    return abs(pos1.x - pos2.x) <= 1 and abs(pos1.y - pos2.y) <= 1
+
+
+# -/- KNIGHT -/-
+def is_knight(pos1, pos2):
+    return abs(pos1.x - pos2.x) * abs(pos1.y - pos2.y) == 2
+
 
 class Game:
+    # TODO: [in __init__] a clever way to initialise a field configuration: number of players, size of the field
     def __init__(self, number_of_players):
+
         self.number_of_players = number_of_players
-        self.field = [[Cell(None) for _ in range(8)] for _ in range(8)]
-        positions = [Position(2, 2), Position(5, 5)]
-        names = ['Alan', 'Bill']
-        self.players = [Player(False, False, 0, positions[i], names[i]) for i in range(number_of_players)]
+        self.field = [[Cell('n-') for _ in range(board_x)] for _ in range(board_y)]
+        # [positions[i] must be in a list here:
+        self.players = [Player(False, False, 0, [positions[i]], names[i]) for i in range(number_of_players)]
         self.current_move = 0
         for ind, i in enumerate(self.players):
-            self.field[positions[ind].x][positions[ind].y] = Cell(i)
+            self.field[positions[ind].x][positions[ind].y] = Cell('p' + str(ind))  # it has been Cell(i)
         # self.field[2][2] = Cell(p1)
         # self.field[5][5] = Cell(p2)
+
+    def is_ended(self):
+        pass
+
+    def get_field(self):
+        return self.field
 
     def is_move_possible(self, current_player_index, the_move):
         player = self.players[current_player_index]
         pos = player.get_trace()[-1]
         m = the_move.get_move()
         s = the_move.get_shoot()
-        # TODO: a place for swap = the_move.get_swap()
+        # TODO: a place for \
+        #  swap = the_move.get_swap()
 
-        # for ind_i, i in enumerate(self.field):
-        #     for ind_j, j in enumerate(i):
-        #         if (
-        #                 abs(ind_i - pos.x) <= 1 and abs(ind_j - pos.y) <= 1
-        #                 and self.field[ind_i][ind_j] is None
-        #                 or player.get_is_knight() and abs(ind_i - pos.x) * abs(ind_j - pos.y) == 2
-        #         ):
-        #             moves.append(Position(ind_i, ind_j))
-
-        if (
-                (abs(m.x - pos.x) <= 1 and abs(m.y - pos.y) <= 1 or player.get_is_knight() and
-                 abs(m.x - pos.x) * abs(m.y - pos.y) == 2) and self.field[m.x][m.y] is None
-        ):
-            if (
-                    abs(m.x - s.x) * abs(m.y - s.y) == 2 and
-                    (isinstance(self.field[s.x][s.y], Player) or self.field[s.x][s.y] is None or
-                     (m.x + m.y == -2 and player.get_blanks() > 0))
-            ):
+        move_to_empty = self.field[m.x][m.y].is_empty()
+        shoot_to_empty = self.field[s.x][s.y].is_empty()
+        shoot_blank = m.x + m.y == -2 and player.get_blanks() > 0
+        player_shot = self.field[s.x][s.y].is_player()
+        # TODO: catch attempts to shoot of move out of the field
+        if (is_king(m, pos) or player.get_is_knight() and is_knight(m, pos)) and move_to_empty:
+            # TODO: shouldn't it be s.x + s.y == -2 ?
+            if is_knight(m, s) and (player_shot or shoot_to_empty or shoot_blank):
+                # TODO: blanks
+                if shoot_blank:
+                    player.reduce_blanks()
+                # TODO: what if the player was shot
+                if player_shot:
+                    print('player was shot, but the game is still running')
+                    # something to do with is_ended()
                 return True
             else:
                 return False
@@ -52,11 +118,18 @@ class Game:
             return False
 
     def execute_move(self, current_player_index, the_move):
-        if (
-                self.is_move_possible(current_player_index,
-                                      the_move) and current_player_index == self.current_move % self.number_of_players
-        ):
+        if self.is_move_possible(current_player_index, the_move) and \
+                current_player_index == self.current_move % self.number_of_players:
+            m = the_move.get_move()
+            s = the_move.get_shoot()
+            player = self.players[current_player_index]
+            pos = player.get_trace()[-1]
             self.players[current_player_index].next_position(the_move.get_move())
+            # changing the field
+            self.field[m.x][m.y] = Cell('p' + str(current_player_index))
+            self.field[s.x][s.y] = Cell('x' + str(current_player_index))
+            self.field[pos.x][pos.y] = Cell('o' + str(current_player_index))
+
             self.current_move += 1
         else:
             raise ValueError
