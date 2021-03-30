@@ -59,15 +59,25 @@ def update_buttons(buttons, manager, board, game):
         for index2, (cell, button) in enumerate(zip(rowf, rowg)):
             if cell.is_trace() or cell.is_shot()[0]:
                 rect = button.get_relative_rect()
-                button.disable()
                 button.kill()
                 buttons[index1][index2] = pygame_gui.elements.ui_button.UIButton(
                     relative_rect=rect,
                     text=cell.t,
                     manager=manager,
                     container=board,
-                    object_id='pressed'
+                    object_id='disabled'
                 )
-                print('replaced trace', index1, index2)
+                buttons[index1][index2].disable()
+            elif cell.is_player()[0]:
+                rect = button.get_relative_rect()
+                button.kill()
+                buttons[index1][index2] = pygame_gui.elements.ui_button.UIButton(
+                    relative_rect=rect,
+                    text=cell.t,
+                    manager=manager,
+                    container=board,
+                    object_id='player'
+                )
+                buttons[index1][index2].disable()
             else:
                 button.set_text(cell.t)

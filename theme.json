@@ -1,12 +1,12 @@
 {
   "defaults": {
     "colours": {
-      "normal_bg": "#45494e",
+      "normal_bg": "#81dba8",
       "hovered_bg": "#35393e",
       "disabled_bg": "#25292e",
       "selected_bg": "#193754",
       "dark_bg": "#15191e",
-      "normal_text": "#c5cbd8",
+      "normal_text": "#1f5737",
       "hovered_text": "#FFFFFF",
       "selected_text": "#FFFFFF",
       "disabled_text": "#6d736f",
@@ -23,10 +23,16 @@
       "unfilled_bar": "#CCCCCC"
     }
   },
-  "board.pressed":{
+  "board.disabled":{
     "colours": {
-      "normal_bg": "#000000",
-      "active_text": "#FF000F"
+      "disabled_bg": "#515151",
+      "disabled_text": "#AAAAAA"
+    }
+  },
+  "board.player": {
+    "colours": {
+      "disabled_bg": "#d9b45f",
+      "disabled_text": "#695400"
     }
   }
 }
