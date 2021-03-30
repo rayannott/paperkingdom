@@ -2,6 +2,14 @@ from player import Player
 from player import Position
 
 
+# players - list of Player, field_size - tuple if ints,
+# is_singleplayer - bool, difficulty - double from
+# 0. to 1. (only if is_singleplayer)
+class Configuration:
+    def __init__(self, players, field_size):
+        pass
+
+
 class Cell:
     """
     The t parameter is a string; it has a form of <character,number,extra_parameters>
