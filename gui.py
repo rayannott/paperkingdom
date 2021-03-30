@@ -7,8 +7,8 @@ from move import Move
 from player import Position
 from player import Player
 
-WIDTH = 1200
-HEIGHT = 1000
+WIDTH = 800
+HEIGHT = 600
 LMARGIN = 200
 RMARGIN = 200
 NUM_PLAYERS = 2
@@ -39,10 +39,12 @@ while is_running:
                                     g.execute_move(current_player, Move(False, move, shoot))
                                     move = None
                                     shoot = None
-                                    gui_utils.set_text_to_buttons(buttons, g)
+                                    gui_utils.update_buttons(buttons, manager, board, g)
                                     current_player = (current_player + 1) % NUM_PLAYERS
                                 except ValueError as e:
                                     print(e)
+                                    move = None
+                                    shoot = None
                                     continue
 
 
