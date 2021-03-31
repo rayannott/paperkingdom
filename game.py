@@ -2,42 +2,36 @@ from player import Player
 from player import Position
 
 
-
-board_x, board_y = 8, 8
-positions = [Position(2, 2), Position(5, 5)]
-names = ['Alan', 'Bill']
-
-
 # if two positions given are a KING away from one another
 def is_king(pos1, pos2):
-    return abs(pos1.x - pos2.x) <= 1 and abs(pos1.y - pos2.y) <= 1
+    return abs((pos1 - pos2).x) <= 1 and abs((pos1 - pos2).y) <= 1
 
 
-# -/- KNIGHT -/-
 def is_knight(pos1, pos2):
     return abs(pos1.x - pos2.x) * abs(pos1.y - pos2.y) == 2
 
 
 class Game:
-    def __init__(self, number_of_players):
-
-        self.number_of_players = number_of_players
-        self.field = [[Cell(0, -1, 0) for _ in range(board_y)] for _ in range(board_x)]
-        self.players = [Player(True, False, 0, [positions[i]], names[i]) for i in range(number_of_players)]
+    def __init__(self, players, board_size, interactive=True):
+        self.board_size = board_size
+        self.number_of_players = len(players)
+        self.field = [[Cell(0, -1, 0) for _ in range(board_size.y)] for _ in range(board_size.x)]
+        self.players = players
         self.current_move = 0
         self.is_ended_local = False
+        self.deltas = [Position(0, 1), Position(1, 0), Position(1, 1), Position(0, -1),
+                       Position(-1, 0), Position(-1, -1), Position(1, -1), Position(-1, 1),
+                       Position(-2, -1), Position(-1, -2), Position(2, 1), Position(1, 2),
+                       Position(-2, 1), Position(2, -1), Position(-1, 2), Position(1, -2)]
         for ind, i in enumerate(self.players):
             self.field[positions[ind].x][positions[ind].y] = Cell(1, ind)
 
     def is_ended(self):
         return self.is_ended_local
 
-    def get_field(self):
-        return self.field
-
     def is_shot_possible(self, current_player_index, the_move):
         player = self.players[current_player_index]
-        pos = player.get_trace()[-1]
+        # pos = player.get_trace()[-1]
         s = the_move.get_shoot()
         shoot_to_empty = self.field[s.x][s.y].is_empty()
         shoot_blank = s.x + s.y == -2 and player.get_blanks() > 0
@@ -97,3 +91,14 @@ class Game:
         player = self.players[current_player_index]
         player.kill()
 
+    def get_field(self):
+        return self.field
+
+    def possible_moves(self, pos, is_knight_=False):
+        result = [pos + x for x in self.deltas[:8]]
+        if player.get_is_knight():
+            result += [pos + x for x in deltas[8:]]
+        return result
+
+    def possible_shots(self, pos, is_knight_=False):
+        return [pos + x for x in self.deltas[8:]]

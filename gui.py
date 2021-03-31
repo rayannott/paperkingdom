@@ -11,9 +11,10 @@ WIDTH = 800
 HEIGHT = 600
 LMARGIN = 200
 RMARGIN = 200
-NUM_PLAYERS = 2
-
-g = Game(NUM_PLAYERS)
+board_size = Position(8, 8)
+players_ = [Player(False, False, 0, [Position(2, 2)], 'Alan'),
+            Player(False, False, 0, [Position(5, 5)], 'Bill')]
+g = Game(players_, board_size)
 window_surface, manager, clock, base_panel, board = gui_utils.init_layout(WIDTH, HEIGHT, LMARGIN, RMARGIN)
 buttons = gui_utils.generate_field(manager, board, g)
 
