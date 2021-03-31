@@ -11,11 +11,13 @@ WIDTH = 1000
 HEIGHT = 600
 LMARGIN = 200
 RMARGIN = 200
+BMARGIN = 10
 NUM_PLAYERS = 2
 
 g = Game(NUM_PLAYERS)
 current_player = 0
-window_surface, manager, clock, base_panel, board = gui_utils.init_layout(WIDTH, HEIGHT, LMARGIN, RMARGIN)
+(window_surface, manager, clock, base_panel,
+ board, left_board, swap_button) = gui_utils.init_layout(WIDTH, HEIGHT, LMARGIN, RMARGIN, BMARGIN)
 buttons = gui_utils.generate_field(manager, board, g, current_player)
 
 is_running = True

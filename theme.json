@@ -41,5 +41,13 @@
       "disabled_bg": "#d9b45f",
       "disabled_text": "#695400"
     }
+  },
+  "base":{
+    "misc":{
+      "border_width" : "0"
+    }
+  },
+  "base.leftboard":{
+    "prototype": "base"
   }
 }

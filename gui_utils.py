@@ -2,7 +2,7 @@ import pygame
 import pygame_gui
 
 
-def init_layout(width, height, l_margin, r_margin):
+def init_layout(width, height, l_margin, r_margin, button_margin):
     pygame.init()
 
     pygame.display.set_caption('Quick Start')
@@ -13,7 +13,8 @@ def init_layout(width, height, l_margin, r_margin):
     base_panel = pygame_gui.elements.ui_panel.UIPanel(
         relative_rect=pygame.Rect((0, 0), (width, height)),
         manager=manager,
-        starting_layer_height=1
+        starting_layer_height=1,
+        object_id='base'
     )
     board_size = min(width - l_margin - r_margin, height)
     left_margin = (width - board_size) // 2
@@ -25,11 +26,20 @@ def init_layout(width, height, l_margin, r_margin):
         container=base_panel,
         object_id='board'
     )
-    butt = pygame_gui.elements.ui_button.UIButton(
-        relative_rect=pygame.Rect(10, 10, 100, 100),
-        text='hello',
+    left_board = pygame_gui.elements.ui_panel.UIPanel(
+        relative_rect=pygame.Rect((0, 0), (left_margin, height)),
         manager=manager,
+        starting_layer_height=1,
         container=base_panel,
+        object_id='leftboard'
+    )
+    total_empty = button_margin * 3
+    button_size_x = (left_margin - total_empty) / 2
+    swap_button = pygame_gui.elements.ui_button.UIButton(
+        relative_rect=pygame.Rect(button_margin, button_margin, button_size_x, 20),
+        text='Swap',
+        manager=manager,
+        container=left_board,
         object_id='butt',
         anchors={
             'left': 'left',
@@ -38,7 +48,20 @@ def init_layout(width, height, l_margin, r_margin):
             'bottom': 'bottom'
         }
     )
-    return window_surface, manager, clock, base_panel, board
+    tetra_button = pygame_gui.elements.ui_button.UIButton(
+        relative_rect=pygame.Rect(left_margin - button_margin - button_size_x, button_margin, button_size_x, 20),
+        text='Tetra',
+        manager=manager,
+        container=left_board,
+        object_id='butt',
+        anchors={
+            'left': 'left',
+            'right': 'right',
+            'top': 'top',
+            'bottom': 'bottom'
+        }
+    )
+    return window_surface, manager, clock, base_panel, board, left_board, swap_button
 
 
 def generate_field(manager, board, game, current_player):
