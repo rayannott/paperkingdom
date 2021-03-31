@@ -14,13 +14,13 @@ RMARGIN = 200
 NUM_PLAYERS = 2
 
 g = Game(NUM_PLAYERS)
+current_player = 0
 window_surface, manager, clock, base_panel, board = gui_utils.init_layout(WIDTH, HEIGHT, LMARGIN, RMARGIN)
-buttons = gui_utils.generate_field(manager, board, g)
+buttons = gui_utils.generate_field(manager, board, g, current_player)
 
 is_running = True
 move = None
 shoot = None
-current_player = 0
 while is_running:
     time_delta = clock.tick(60) / 1000.0
     for event in pygame.event.get():
@@ -39,14 +39,15 @@ while is_running:
                                     g.execute_move(current_player, Move(False, move, shoot))
                                     move = None
                                     shoot = None
-                                    gui_utils.update_buttons(buttons, manager, board, g)
                                     current_player = (current_player + 1) % NUM_PLAYERS
+                                    gui_utils.update_buttons(buttons, manager, board, g, current_player)
+                                    if g.is_ended():
+                                        board.disable()
                                 except ValueError as e:
                                     print(e)
                                     move = None
                                     shoot = None
                                     continue
-
 
                 print('clicked button', move, shoot)
         manager.process_events(event)
