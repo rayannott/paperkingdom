@@ -74,43 +74,31 @@ def generate_field(manager, board, game, current_player):
     return buttons
 
 
+def kill_create_button(buttons, index1, index2, text, manager, board, object_id, disable):
+    rect = buttons[index1][index2].get_relative_rect()
+    buttons[index1][index2].kill()
+    buttons[index1][index2] = pygame_gui.elements.ui_button.UIButton(
+        relative_rect=rect,
+        text=text,
+        manager=manager,
+        container=board,
+        object_id=object_id
+    )
+    if disable:
+        buttons[index1][index2].disable()
+
+
 def update_buttons(buttons, manager, board, game, current_player):
     f = game.get_field()
     for index1, (rowf, rowg) in enumerate(zip(f, buttons)):
         for index2, (cell, button) in enumerate(zip(rowf, rowg)):
-            if cell.is_trace():
-                rect = button.get_relative_rect()
-                button.kill()
-                buttons[index1][index2] = pygame_gui.elements.ui_button.UIButton(
-                    relative_rect=rect,
-                    text=cell.t,
-                    manager=manager,
-                    container=board,
-                    object_id='trace'
-                )
-                buttons[index1][index2].disable()
-            elif cell.is_shot()[0]:
-                rect = button.get_relative_rect()
-                button.kill()
-                buttons[index1][index2] = pygame_gui.elements.ui_button.UIButton(
-                    relative_rect=rect,
-                    text=cell.t,
-                    manager=manager,
-                    container=board,
-                    object_id='shot'
-                )
-                buttons[index1][index2].disable()
-            elif cell.is_player()[0]:
-                rect = button.get_relative_rect()
-                button.kill()
-                buttons[index1][index2] = pygame_gui.elements.ui_button.UIButton(
-                    relative_rect=rect,
-                    text=cell.t,
-                    manager=manager,
-                    container=board,
-                    object_id='player'
-                )
-                if current_player == cell.is_player()[1]:
-                    buttons[index1][index2].disable()
-            else:
-                button.set_text(cell.t)
+            if button.object_ids[2] in [None, 'player']:
+                if cell.is_trace():
+                    kill_create_button(buttons, index1, index2, cell.t, manager, board, 'trace', True)
+                elif cell.is_shot()[0]:
+                    kill_create_button(buttons, index1, index2, cell.t, manager, board, 'shot', True)
+                elif cell.is_player()[0]:
+                    kill_create_button(buttons, index1, index2, cell.t,
+                                       manager, board, 'player', current_player == cell.is_player()[1])
+            # else:
+            #     button.set_text(cell.t)
