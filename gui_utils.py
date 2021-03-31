@@ -53,7 +53,6 @@ def generate_field(manager, board, game, current_player):
         for indcell, cell in enumerate(row):
             rect = pygame.Rect(w * indrow, h * indcell, w, h)
             if cell.is_player()[0]:
-                print(indrow, indcell, 'is player')
                 butt = pygame_gui.elements.ui_button.UIButton(
                     relative_rect=rect,
                     text=cell.t,
@@ -100,5 +99,3 @@ def update_buttons(buttons, manager, board, game, current_player):
                 elif cell.is_player()[0]:
                     kill_create_button(buttons, index1, index2, cell.t,
                                        manager, board, 'player', current_player == cell.is_player()[1])
-            # else:
-            #     button.set_text(cell.t)
