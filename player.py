@@ -9,7 +9,7 @@ class Position:
 
 # TODO: add options
 class Player:
-    def __init__(self, is_knight, was_knight, blanks, trace, name):
+    def __init__(self, is_knight, was_knight, blanks, trace, name, is_alive=True):
         self.is_knight = is_knight
         self.was_knight = was_knight
         self.blanks = blanks
@@ -37,3 +37,6 @@ class Player:
 
     def reduce_blanks(self):
         self.blanks -= 1
+
+    def kill(self):
+        pass

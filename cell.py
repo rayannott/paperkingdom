@@ -11,41 +11,45 @@ class Cell:
     't-' is a target
     """
 
-    def __init__(self, t):
+    def __init__(self, cell_type, owner_id, parameter=False):
+        # string representation
         self.t = t
+        self.cell_type = cell_type  # int: player - 1, trace - 2, shot - 3, target - 4, wall - 5
+        self.owner_id = owner_id
+        self.parameter = parameter
+
+        self.player = cell_type == 1
+        self.trace = cell_type == 2
+        self.shot = cell_type == 3
+        self.target = cell_type == 4
+        self.wall = cell_type == 5
+        self.empty = cell_type == 0
+
+    def __str__(self):
+        types = ['n', 'p', 'o', 'x', 't', 'w']
+        res = types[self.cell_type]
+        if self.player or self.trace or self.shot:
+            res += str(self.cell_type)
+        else:
+            res += '-'
+        if self.trace:
+            res += str('u')
+        pass
 
     def is_player(self):
-        if self.t[0] == 'p':
-            return True, int(self.t[1:])
-        else:
-            return False, 0
+        return self.player
 
     def is_shot(self):
-        if self.t[0] == 'x':
-            return True, int(self.t[1:])
-        else:
-            return False, 0
+        return self.shot
 
     def is_target(self):
-        if self.t[0] == 't':
-            return True
-        else:
-            return False
-
-    def is_trace_used(self):
-        if self.t[-1] == 'u':
-            return True
-        else:
-            return False
+        return self.target
 
     def is_trace(self):
-        if self.t[0] == 'o':
-            return True
-        else:
-            return False
+        return self.trace
 
     def is_empty(self):
-        if self.t[0] == 'n':
-            return True
-        else:
-            return False
+        return self.empty
+
+    def is_trace_used(self):
+        return self.parameter
