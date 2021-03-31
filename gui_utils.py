@@ -46,7 +46,7 @@ def generate_field(manager, board, game, current_player):
     rows = len(f)
     columns = len(f[0])
     w, h = board.get_container().get_rect().size
-    w, h = w // rows, h // columns
+    w, h = w / rows, h / columns
     buttons = []
     for indrow, row in enumerate(f):
         buttons.append([])

@@ -7,7 +7,7 @@ from move import Move
 from player import Position
 from player import Player
 
-WIDTH = 800
+WIDTH = 1000
 HEIGHT = 600
 LMARGIN = 200
 RMARGIN = 200
