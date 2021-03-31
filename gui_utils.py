@@ -1,6 +1,8 @@
 import pygame
 import pygame_gui
 
+from player import Position
+from move import Move
 
 def init_layout(width, height, l_margin, r_margin, button_margin):
     pygame.init()
@@ -35,8 +37,9 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
     )
     total_empty = button_margin * 3
     button_size_x = (left_margin - total_empty) / 2
+    button_size_y = 20
     swap_button = pygame_gui.elements.ui_button.UIButton(
-        relative_rect=pygame.Rect(button_margin, button_margin, button_size_x, 20),
+        relative_rect=pygame.Rect(button_margin, button_margin, button_size_x, button_size_y),
         text='Swap',
         manager=manager,
         container=left_board,
@@ -49,7 +52,7 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
         }
     )
     tetra_button = pygame_gui.elements.ui_button.UIButton(
-        relative_rect=pygame.Rect(left_margin - button_margin - button_size_x, button_margin, button_size_x, 20),
+        relative_rect=pygame.Rect(left_margin - button_margin - button_size_x, button_margin, button_size_x, button_size_y),
         text='Tetra',
         manager=manager,
         container=left_board,
@@ -61,7 +64,20 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
             'bottom': 'bottom'
         }
     )
-    return window_surface, manager, clock, base_panel, board, left_board, swap_button
+    restart_button = pygame_gui.elements.ui_button.UIButton(
+        relative_rect=pygame.Rect(button_margin, 2 * button_margin + button_size_y, button_size_x, button_size_y),
+        text='Restart',
+        manager=manager,
+        container=left_board,
+        object_id='restart',
+        anchors={
+            'left': 'left',
+            'right': 'right',
+            'top': 'top',
+            'bottom': 'bottom'
+        }
+    )
+    return window_surface, manager, clock, base_panel, board, left_board, swap_button, tetra_button, restart_button
 
 
 def generate_field(manager, board, game, current_player):
@@ -110,11 +126,17 @@ def kill_create_button(buttons, index1, index2, text, manager, board, object_id,
         buttons[index1][index2].disable()
 
 
+def kill_all_buttons(buttons):
+    for row in buttons:
+        for butt in row:
+            butt.kill()
+
+
 def update_buttons(buttons, manager, board, game, current_player):
     f = game.get_field()
     for index1, (rowf, rowg) in enumerate(zip(f, buttons)):
         for index2, (cell, button) in enumerate(zip(rowf, rowg)):
-            if button.object_ids[2] in [None, 'player']:
+            # if button.object_ids[2] in [None, 'player']:
                 if cell.is_trace():
                     kill_create_button(buttons, index1, index2, cell.t, manager, board, 'trace', True)
                 elif cell.is_shot()[0]:
@@ -122,3 +144,11 @@ def update_buttons(buttons, manager, board, game, current_player):
                 elif cell.is_player()[0]:
                     kill_create_button(buttons, index1, index2, cell.t,
                                        manager, board, 'player', current_player == cell.is_player()[1])
+
+
+def check_field_buttons(event, buttons):
+    for indrow, row in enumerate(buttons):
+        for indbutt, butt in enumerate(row):
+            if event.ui_element == butt:
+                return indrow, indbutt
+    return -1, -1
