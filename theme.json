@@ -23,16 +23,31 @@
       "unfilled_bar": "#CCCCCC"
     }
   },
-  "board.disabled":{
+  "board.trace":{
     "colours": {
-      "disabled_bg": "#515151",
+      "disabled_bg": "#604545",
+      "disabled_text": "#AAAAAA"
+    }
+  },
+  "board.shot":{
+    "colours": {
+      "disabled_bg": "#454560",
       "disabled_text": "#AAAAAA"
     }
   },
   "board.player": {
     "colours": {
+      "normal_bg": "#ffda85",
       "disabled_bg": "#d9b45f",
       "disabled_text": "#695400"
     }
+  },
+  "base":{
+    "misc":{
+      "border_width" : "0"
+    }
+  },
+  "base.leftboard":{
+    "prototype": "base"
   }
 }
