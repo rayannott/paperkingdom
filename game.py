@@ -10,59 +10,6 @@ class Configuration:
         pass
 
 
-class Cell:
-    """
-    The t parameter is a string; it has a form of <character,number,extra_parameters>
-    Here are some examples:
-    'p4' is a player 4
-    'o2' is a trace left by a player 2
-    'o1u' is a trace of a player 1 that has been used in a tetra
-    'x0' is a shot made by a player 0
-    'n-' is an empty cell
-    'w-' is a wall
-    't-' is a target
-    """
-
-    def __init__(self, t):
-        self.t = t
-
-    def is_player(self):
-        if self.t[0] == 'p':
-            return True, int(self.t[1:])
-        else:
-            return False, 0
-
-    def is_shot(self):
-        if self.t[0] == 'x':
-            return True, int(self.t[1:])
-        else:
-            return False, 0
-
-    def is_target(self):
-        if self.t[0] == 't':
-            return True
-        else:
-            return False
-
-    def is_trace_used(self):
-        if self.t[-1] == 'u':
-            return True
-        else:
-            return False
-
-    def is_trace(self):
-        if self.t[0] == 'o':
-            return True
-        else:
-            return False
-
-    def is_empty(self):
-        if self.t[0] == 'n':
-            return True
-        else:
-            return False
-
-
 board_x, board_y = 8, 8
 positions = [Position(2, 2), Position(5, 5)]
 names = ['Alan', 'Bill']
@@ -103,47 +50,104 @@ class Game:
     def get_field(self):
         return self.field
 
+    def is_shot_possible(self, current_player_index, the_move):
+        player = self.players[current_player_index]
+        pos = player.get_trace()[-1]
+        s = the_move.get_shoot()
+        shoot_to_empty = self.field[s.x][s.y].is_empty()
+        shoot_blank = s.x + s.y == -2 and player.get_blanks() > 0
+        player_shot, _ = self.field[s.x][s.y].is_player()
+        if is_knight(m, s) and (player_shot or shoot_to_empty or shoot_blank):
+            # TODO: blanks
+            if shoot_blank:
+                player.reduce_blanks()
+            # TODO: what if the player was shot
+            if player_shot:
+                print('player was shot')
+                self.is_ended_local = True
+            return True
+        else:
+            return False
+
     def is_move_possible(self, current_player_index, the_move):
         player = self.players[current_player_index]
         pos = player.get_trace()[-1]
         m = the_move.get_move()
-        s = the_move.get_shoot()
-        # TODO: a place for \
-        #  swap = the_move.get_swap()
-
         move_to_empty = self.field[m.x][m.y].is_empty()
-        shoot_to_empty = self.field[s.x][s.y].is_empty()
-        shoot_blank = s.x + s.y == -2 and player.get_blanks() > 0
-        player_shot, _ = self.field[s.x][s.y].is_player()
-        # TODO: catch attempts to shoot or move out of the field
-        if (is_king(m, pos) or player.get_is_knight() and is_knight(m, pos)) and move_to_empty:
-            if is_knight(m, s) and (player_shot or shoot_to_empty or shoot_blank):
-                # TODO: blanks
-                if shoot_blank:
-                    player.reduce_blanks()
-                # TODO: what if the player was shot
-                if player_shot:
-                    print('player was shot')
-                    self.is_ended_local = True
-                return True
-            else:
-                return False
-        else:
-            return False
+        return (is_king(m, pos) or player.get_is_knight() and is_knight(m, pos)) and move_to_empty
+
+    # def is_move_possible(self, current_player_index, the_move):
+    #     player = self.players[current_player_index]
+    #     pos = player.get_trace()[-1]
+    #     m = the_move.get_move()
+    #     s = the_move.get_shoot()
+    #     # TODO: a place for \
+    #     #  swap = the_move.get_swap()
+    #
+    #     move_to_empty = self.field[m.x][m.y].is_empty()
+    #     shoot_to_empty = self.field[s.x][s.y].is_empty()
+    #     shoot_blank = s.x + s.y == -2 and player.get_blanks() > 0
+    #     player_shot, _ = self.field[s.x][s.y].is_player()
+    #     # TODO: catch attempts to shoot or move out of the field
+    #     if (is_king(m, pos) or player.get_is_knight() and is_knight(m, pos)) and move_to_empty:
+    #         if is_knight(m, s) and (player_shot or shoot_to_empty or shoot_blank):
+    #             # TODO: blanks
+    #             if shoot_blank:
+    #                 player.reduce_blanks()
+    #             # TODO: what if the player was shot
+    #             if player_shot:
+    #                 print('player was shot')
+    #                 self.is_ended_local = True
+    #             return True
+    #         else:
+    #             return False
+    #     else:
+    #         return False
+
+    # def execute_move(self, current_player_index, the_move):
+    #     if self.is_move_possible(current_player_index, the_move) and \
+    #             current_player_index == self.current_move % self.number_of_players:
+    #         m = the_move.get_move()
+    #         s = the_move.get_shoot()
+    #         player = self.players[current_player_index]
+    #         pos = player.get_trace()[-1]
+    #         self.players[current_player_index].next_position(the_move.get_move())
+    #         # changing the field
+    #         self.field[m.x][m.y] = Cell('p' + str(current_player_index))
+    #         self.field[s.x][s.y] = Cell('x' + str(current_player_index))
+    #         self.field[pos.x][pos.y] = Cell('o' + str(current_player_index))
+    #
+    #         self.current_move += 1
+    #     else:
+    #         raise ValueError('Invalid move')
 
     def execute_move(self, current_player_index, the_move):
         if self.is_move_possible(current_player_index, the_move) and \
                 current_player_index == self.current_move % self.number_of_players:
             m = the_move.get_move()
-            s = the_move.get_shoot()
             player = self.players[current_player_index]
             pos = player.get_trace()[-1]
-            self.players[current_player_index].next_position(the_move.get_move())
-            # changing the field
-            self.field[m.x][m.y] = Cell('p' + str(current_player_index))
-            self.field[s.x][s.y] = Cell('x' + str(current_player_index))
-            self.field[pos.x][pos.y] = Cell('o' + str(current_player_index))
 
-            self.current_move += 1
+            self.players[current_player_index].next_position(the_move.get_move())
+            self.field[m.x][m.y] = Cell('p' + str(current_player_index))
+            self.field[pos.x][pos.y] = Cell('o' + str(current_player_index))
         else:
             raise ValueError('Invalid move')
+
+    def execute_shot(self, current_player_index, the_move):
+        player = self.players[current_player_index]
+        if self.is_shot_possible(current_player_index, the_move) and \
+                current_player_index == self.current_move % self.number_of_players:
+            self.field[s.x][s.y] = Cell('x' + str(current_player_index))
+            self.current_move += 1
+
+        else:
+            pos_wrong = player.get_trace()[-1]
+            self.field[pos_wrong.x][pos_wrong.y] = Cell('n-')
+            player.cancel_move()
+            pos_prev = player.get_trace()[-1]
+
+            self.field[pos_prev.x][pos_prev.y] = Cell('p' + str(current_player_index))
+
+            raise ValueError('Invalid shot')
+

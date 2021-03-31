@@ -32,5 +32,8 @@ class Player:
     def next_position(self, new_pos):
         self.trace.append(new_pos)
 
+    def cancel_move(self):
+        self.trace.pop()
+
     def reduce_blanks(self):
         self.blanks -= 1
