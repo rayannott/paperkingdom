@@ -11,9 +11,8 @@ class Cell:
     't-' is a target
     """
 
-    def __init__(self, cell_type, owner_id, parameter=False):
+    def __init__(self, cell_type, owner_id=0, parameter=False):
         # string representation
-        self.t = t
         self.cell_type = cell_type  # int: player - 1, trace - 2, shot - 3, target - 4, wall - 5
         self.owner_id = owner_id
         self.parameter = parameter
@@ -25,7 +24,12 @@ class Cell:
         self.wall = cell_type == 5
         self.empty = cell_type == 0
 
+        self.str = self._build_str()
+
     def __str__(self):
+        return self.str
+
+    def _build_str(self):
         types = ['n', 'p', 'o', 'x', 't', 'w']
         res = types[self.cell_type]
         if self.player or self.trace or self.shot:
@@ -34,7 +38,7 @@ class Cell:
             res += '-'
         if self.trace:
             res += str('u')
-        pass
+        return res
 
     def is_player(self):
         return self.player
@@ -53,3 +57,6 @@ class Cell:
 
     def is_trace_used(self):
         return self.parameter
+
+    def get_owner_id(self):
+        return self.owner_id

@@ -20,13 +20,12 @@ class Options:
 
 # TODO: add options
 class Player:
-    def __init__(self, is_knight: bool, was_knight: bool, blanks: int, trace: list[Position], options: Options,
+    def __init__(self, is_knight: bool, was_knight: bool, blanks: int, trace: list, options: Options=None,
                  is_alive=True):
         self.is_knight = is_knight
         self.was_knight = was_knight
         self.blanks = blanks
         self.trace = trace
-        self.name = name
         # to swap the moves parameter
 
     def get_trace(self):
@@ -38,8 +37,8 @@ class Player:
     def get_blanks(self):
         return self.blanks
 
-    def get_name(self):
-        return self.name
+    # def get_name(self):
+    #     return self.name
 
     def next_position(self, new_pos):
         self.trace.append(new_pos)

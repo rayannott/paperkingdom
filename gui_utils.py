@@ -91,20 +91,20 @@ def generate_field(manager, board, game, current_player):
         buttons.append([])
         for indcell, cell in enumerate(row):
             rect = pygame.Rect(w * indrow, h * indcell, w, h)
-            if cell.is_player()[0]:
+            if cell.is_player():
                 butt = pygame_gui.elements.ui_button.UIButton(
                     relative_rect=rect,
-                    text=cell.t,
+                    text=str(cell),
                     manager=manager,
                     container=board,
                     object_id='player'
                 )
-                if current_player == cell.is_player()[1]:
+                if current_player == cell.get_owner_id():
                     butt.disable()
             else:
                 butt = pygame_gui.elements.ui_button.UIButton(
                     relative_rect=rect,
-                    text=cell.t,
+                    text=str(cell),
                     manager=manager,
                     container=board
                 )
@@ -138,12 +138,12 @@ def update_buttons(buttons, manager, board, game, current_player):
         for index2, (cell, button) in enumerate(zip(rowf, rowg)):
             # if button.object_ids[2] in [None, 'player']:
                 if cell.is_trace():
-                    kill_create_button(buttons, index1, index2, cell.t, manager, board, 'trace', True)
-                elif cell.is_shot()[0]:
-                    kill_create_button(buttons, index1, index2, cell.t, manager, board, 'shot', True)
-                elif cell.is_player()[0]:
-                    kill_create_button(buttons, index1, index2, cell.t,
-                                       manager, board, 'player', current_player == cell.is_player()[1])
+                    kill_create_button(buttons, index1, index2, str(cell), manager, board, 'trace', True)
+                elif cell.is_shot():
+                    kill_create_button(buttons, index1, index2, str(cell), manager, board, 'shot', True)
+                elif cell.is_player():
+                    kill_create_button(buttons, index1, index2, str(cell),
+                                       manager, board, 'player', current_player == cell.get_owner_id())
 
 
 def check_field_buttons(event, buttons):

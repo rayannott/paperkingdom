@@ -11,20 +11,28 @@ WIDTH = 1000
 HEIGHT = 600
 LMARGIN = 200
 RMARGIN = 200
+BMARGIN = 10
 
-board_size = Position(8, 8)
-players_ = [Player(False, False, 0, [Position(2, 2)], 'Alan'),
-            Player(False, False, 0, [Position(5, 5)], 'Bill')]
-g = Game(players_, board_size)
-current_player = 0
+
+def init_board():
+    board_size = Position(8, 8)
+    players_ = [Player(False, False, 0, [Position(2, 2)]),
+                Player(False, False, 0, [Position(5, 5)])]
+    g_ = Game(players_, board_size)
+    n_ = len(players_)
+    c_ = 0
+    m_ = None
+    s_ = None
+    return g_, n_, c_, m_, s_
+
+
+g, num_players, current_player, move, shoot = init_board()
 (window_surface, manager, clock, base_panel, board, left_board,
  swap_button, tetra_button, restart_button) = gui_utils.init_layout(WIDTH, HEIGHT, LMARGIN, RMARGIN, BMARGIN)
 buttons = gui_utils.generate_field(manager, board, g, current_player)
 
 
 is_running = True
-move = None
-shoot = None
 while is_running:
     time_delta = clock.tick(60) / 1000.0
     for event in pygame.event.get():
@@ -33,10 +41,7 @@ while is_running:
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == restart_button:
-                    move = None
-                    shoot = None
-                    g = Game(NUM_PLAYERS)
-                    current_player = 0
+                    g, num_players, current_player, move, shoot = init_board()
                     gui_utils.kill_all_buttons(buttons)
                     buttons = gui_utils.generate_field(manager, board, g, current_player)
                     continue
@@ -46,10 +51,13 @@ while is_running:
                 else:
                     shoot = Position(indrow, indbutt)
                     try:
-                        g.execute_move(current_player, Move(False, move, shoot))
+                        m = Move(False, move, shoot)
+                        g.execute_move(current_player, m)
+                        g.execute_shot(current_player, m)
+                        print('Successful move', move, shoot)
                         move = None
                         shoot = None
-                        current_player = (current_player + 1) % NUM_PLAYERS
+                        current_player = (current_player + 1) % num_players
                         gui_utils.update_buttons(buttons, manager, board, g, current_player)
                         if g.is_ended():
                             board.disable()
@@ -59,7 +67,6 @@ while is_running:
                         shoot = None
                         continue
 
-                print('clicked button', move, shoot)
         manager.process_events(event)
 
     manager.update(time_delta)

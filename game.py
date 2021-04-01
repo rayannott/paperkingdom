@@ -1,5 +1,6 @@
 from player import Player
 from player import Position
+from cell import Cell
 
 
 # if two positions given are a KING away from one another
@@ -19,12 +20,13 @@ class Game:
         self.players = players
         self.current_move = 0
         self.is_ended_local = False
-        self.deltas = [Position(0, 1), Position(1, 0), Position(1, 1), Position(0, -1),
-                       Position(-1, 0), Position(-1, -1), Position(1, -1), Position(-1, 1),
-                       Position(-2, -1), Position(-1, -2), Position(2, 1), Position(1, 2),
-                       Position(-2, 1), Position(2, -1), Position(-1, 2), Position(1, -2)]
+        self.deltas = [Position( 0,  1), Position( 1,  0), Position( 0, -1), Position(-1,  0),
+                       Position( 1,  1), Position( 1, -1), Position(-1, -1), Position(-1,  1),
+                       Position(-2, -1), Position(-1, -2), Position( 2,  1), Position( 1,  2),
+                       Position(-2,  1), Position( 2, -1), Position(-1,  2), Position( 1, -2)]
         for ind, i in enumerate(self.players):
-            self.field[positions[ind].x][positions[ind].y] = Cell(1, ind)
+            pos = i.get_trace()[-1]
+            self.field[pos.x][pos.y] = Cell(1, ind)
 
     def is_ended(self):
         return self.is_ended_local
@@ -32,10 +34,11 @@ class Game:
     def is_shot_possible(self, current_player_index, the_move):
         player = self.players[current_player_index]
         # pos = player.get_trace()[-1]
+        m = the_move.get_move()
         s = the_move.get_shoot()
         shoot_to_empty = self.field[s.x][s.y].is_empty()
         shoot_blank = s.x + s.y == -2 and player.get_blanks() > 0
-        player_shot, _ = self.field[s.x][s.y].is_player()
+        player_shot = self.field[s.x][s.y].is_player()
         return is_knight(m, s) and (player_shot or shoot_to_empty or shoot_blank)
 
     def is_move_possible(self, current_player_index, the_move):
@@ -60,13 +63,13 @@ class Game:
 
     def execute_shot(self, current_player_index, the_move):
         player = self.players[current_player_index]
-
+        s = the_move.get_shoot()
         if self.is_shot_possible(current_player_index, the_move) and \
                 current_player_index == self.current_move % self.number_of_players:
             self.field[s.x][s.y] = Cell(3, current_player_index)
             self.current_move += 1
             shoot_blank = s.x + s.y == -2 and player.get_blanks() > 0
-            player_shot, _ = self.field[s.x][s.y].is_player()
+            player_shot = self.field[s.x][s.y].is_player()
             # TODO: blanks
             if shoot_blank:
                 player.reduce_blanks()
@@ -79,7 +82,7 @@ class Game:
 
         else:
             pos_wrong = player.get_trace()[-1]
-            self.field[pos_wrong.x][pos_wrong.y] = Cell('n-')
+            self.field[pos_wrong.x][pos_wrong.y] = Cell(0)
             player.cancel_move()
             pos_prev = player.get_trace()[-1]
 
