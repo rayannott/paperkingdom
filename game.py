@@ -4,19 +4,35 @@ from cell import Cell
 
 
 def is_king(pos1: Position, pos2: Position):
+    """
+    checks if two positions are 'king' away from e/o
+    """
     return abs((pos1 - pos2).x) <= 1 and abs((pos1 - pos2).y) <= 1
 
 
 def is_knight(pos1: Position, pos2: Position):
+    """
+    checks if two positions are 'knight' away from e/o
+    """
     return abs(pos1.x - pos2.x) * abs(pos1.y - pos2.y) == 2
 
 
 def is_diag(pos1: Position, pos2: Position):
+    """
+    checks if two positions are at the corners of a square of side 3
+    """
     return abs(pos1.x - pos2.x) == 2 and abs(pos1.y - pos2.y) == 2
 
 
 class Game:
     def __init__(self, players, board_size, interactive=True):
+        """
+        levels (fuck levels!):
+        1 - core
+        2 - prev + borders
+        3 - prev + knights + nerf
+        4 - prev + tetras + tetras for
+        """
         self.board_size = board_size
         self.number_of_players = len(players)
         self.field = [[Cell(0) for _ in range(board_size.y)] for _ in range(board_size.x)]
@@ -36,8 +52,10 @@ class Game:
             self.field[pos.x][pos.y] = Cell(1, ind)
 
     def is_ended(self):
-        some_player_cannot_Move = False
-
+        """
+        !is used outside Game to end the game loop
+        """
+        some_player_cannot_move = False
         for pl in self.players:
             pos = pl.get_trace()[-1]
             is_kn = pl.get_is_knight()
@@ -46,12 +64,15 @@ class Game:
             for shoot_from in poss_moves:
                 viable_moves += len(self.possible_shots(shoot_from))
             if viable_moves == 0:
-                some_player_cannot_Move = True
+                some_player_cannot_move = True
 
-        return self.is_ended_local or some_player_cannot_Move
+        return self.is_ended_local or some_player_cannot_move
 
     # TODO: add num_of_blanks here after s,
     def is_shot_possible(self, pos, s):
+        """
+        checks if it is possible to shoot from position pos to s
+        """
         if not (0 <= s.x < self.board_size.x and 0 <= s.y < self.board_size.y):
             return False
         shoot_from_border = self.is_on_border(pos) and is_diag(pos, s)
@@ -59,9 +80,13 @@ class Game:
         shoot_blank = s.x + s.y == -2  # and player.get_blanks() > 0
         player_shot = self.field[s.x][s.y].is_player()
         return is_knight(pos, s) and (player_shot or shoot_to_empty or shoot_blank) \
-            or shoot_from_border and (player_shot or shoot_to_empty or shoot_blank)
+               or shoot_from_border and (player_shot or shoot_to_empty or shoot_blank)
 
     def is_move_possible(self, pos, m, is_knight_=False):
+        """
+        checks if it is possible to move from position pos to s
+        considering that a player may be a knight
+        """
         if not (0 <= m.x < self.board_size.x and 0 <= m.y < self.board_size.y):
             return False
         if len(self.possible_shots(m)) == 0:
@@ -70,18 +95,27 @@ class Game:
         return (is_king(m, pos) or is_knight_ and is_knight(m, pos)) and move_to_empty
 
     def execute_move(self, current_player_index, m):
+        """
+        !is used outside Game
+        if possible:
+            moves the player with current_player_index and updates the cells
+        """
         player = self.players[current_player_index]
         pos = player.get_trace()[-1]
         if self.is_move_possible(pos, m, player.get_is_knight()) and \
                 current_player_index == self.current_move % self.number_of_players:
             self.players[current_player_index].next_position(m)
-            self.field[m.x][m.y] = Cell(1, current_player_index)
-            self.field[pos.x][pos.y] = Cell(2, current_player_index)
+            self.field[m.x][m.y] = Cell(1, current_player_index)  # this is a "player" now
+            self.field[pos.x][pos.y] = Cell(2, current_player_index)  # this is a "trace" now
         else:
             raise ValueError('Invalid move')
 
     def execute_shot(self, current_player_index, s):
-        # s = the_move.get_shoot()
+        """
+        !is used outside Game
+        if possible:
+            records the shot made by the player with current_player_index and updates the cells
+        """
         player = self.players[current_player_index]
         pos = player.get_trace()[-1]
         if self.is_shot_possible(pos, s) and \
@@ -117,8 +151,6 @@ class Game:
         return result
 
     def possible_shots(self, pos):
-        # player = self.players[player_index]
-        # pos = player.get_trace()[-1]
         return [pos + de for de in self.deltas[8:] if self.is_shot_possible(pos, pos + de)]
 
     def kill_this_player(self, current_player_index):
