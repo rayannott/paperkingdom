@@ -48,8 +48,7 @@ while is_running:
                 if move is None:
                     move = Position(indrow, indbutt)
                     try:
-                        m = Move(False, move, None)
-                        game.execute_move(current_player, m)
+                        game.execute_move(current_player, move)
                         sequence = gui.update_sequence('Player ' + str(current_player) + ': shoot')
                     except ValueError as e:
                         print(e)
@@ -60,8 +59,7 @@ while is_running:
                 else:
                     shoot = Position(indrow, indbutt)
                     try:
-                        m = Move(False, move, shoot)
-                        game.execute_shot(current_player, m)
+                        game.execute_shot(current_player, shoot)
                         print('Successful move', move, shoot)
                         move = None
                         shoot = None

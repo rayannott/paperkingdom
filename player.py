@@ -20,8 +20,8 @@ class Options:
 
 # TODO: add options
 class Player:
-    def __init__(self, is_knight: bool, was_knight: bool, blanks: int, trace: list, options: Options=None,
-                 is_alive=True):
+    def __init__(self, is_knight: bool, was_knight: bool, blanks: int, trace: list, is_alive=True,
+                 options: Options=None):
         self.is_knight = is_knight
         self.was_knight = was_knight
         self.blanks = blanks
