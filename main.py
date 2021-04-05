@@ -1,8 +1,9 @@
 import ui
+from gui import game_loop
 
 
 def main():
-    pass
+    game_loop()
 
 
 if __name__ == '__main__':

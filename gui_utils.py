@@ -1,15 +1,29 @@
 import pygame
 import pygame_gui
 
+from game import Game
+from player import Position
+from player import Player
+
+
+def init_board():
+    board_size = Position(8, 8)
+    players_ = [Player(False, False, 0, [Position(2, 2)]),
+                Player(False, False, 0, [Position(5, 5)])]
+    g_ = Game(players_, board_size)
+    n_ = len(players_)
+    c_ = 0
+    m_ = None
+    s_ = None
+    return g_, n_, c_, m_, s_
+
 
 class GUI:
 
-    def __init__(self, width, height, l_margin, r_margin, button_margin, game, current_player):
+    def __init__(self, width, height, l_margin, r_margin, button_margin, window_surface):
         self.r_margin = r_margin
-        pygame.init()
-
-        pygame.display.set_caption('Paper Kingdom')
-        self.window_surface = pygame.display.set_mode((width, height))
+        self.window_surface = window_surface
+        self.game, self.num_players, self.current_player, self.move, self.shoot = init_board()
 
         self.manager = pygame_gui.UIManager((width, height), 'theme.json')
         self.clock = pygame.time.Clock()
@@ -43,7 +57,7 @@ class GUI:
         )
         self.sequence = pygame_gui.elements.ui_text_box.UITextBox(
             relative_rect=pygame.Rect(0, 0, r_margin - 7, 80),
-            html_text='Player ' + str(current_player) + ': move shoot',
+            html_text='Player ' + str(self.current_player) + ': move shoot',
             manager=self.manager,
             container=self.right_panel,
             object_id='sequence',
@@ -90,10 +104,7 @@ class GUI:
             }
         )
         self.buttons = None
-        self.generate_field(game, current_player)
-
-    def get_time_delta(self):
-        return self.clock.tick(60) / 1000.0
+        self.generate_field(self.game, self.current_player)
 
     def generate_field(self, game, current_player):
         f = game.get_field()
@@ -174,3 +185,54 @@ class GUI:
             container=self.right_panel,
             object_id='sequence',
         )
+
+    def game_loop(self):
+        is_running = True
+        while is_running:
+            time_delta = self.clock.tick(60) / 1000.0
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    is_running = False
+                if event.type == pygame.USEREVENT:
+                    if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                        if event.ui_element == self.restart_button:
+                            self.game, self.num_players, self.current_player, self.move, self.shoot = init_board()
+                            self.kill_all_buttons()
+                            self.generate_field(self.game, self.current_player)
+                            continue
+                        indrow, indbutt = self.check_field_buttons(event)
+                        if self.move is None:
+                            self.move = Position(indrow, indbutt)
+                            try:
+                                self.game.execute_move(self.current_player, self.move)
+                                self.update_sequence('Player ' + str(self.current_player) + ': shoot')
+                                self.update_buttons(self.game, self.current_player)
+                            except ValueError as e:
+                                print(e)
+                                self.move = None
+                                continue
+                        else:
+                            self.shoot = Position(indrow, indbutt)
+                            try:
+                                self.game.execute_shot(self.current_player, self.shoot)
+                                print('Successful move', self.move, self.shoot)
+                                self.move = None
+                                self.current_player = (self.current_player + 1) % self.num_players
+                                if self.game.is_ended():
+                                    print('disabled')
+                                    self.board.enable()
+                                    self.board.disable()
+                                    self.update_sequence('game ended')
+                                else:
+                                    self.update_sequence('Player ' + str(self.current_player) + ': move shoot')
+                            except ValueError as e:
+                                print(e)
+                                continue
+                            self.update_buttons(self.game, self.current_player)
+
+                self.manager.process_events(event)
+
+            self.manager.update(time_delta)
+            self.manager.draw_ui(self.window_surface)
+
+            pygame.display.update()
