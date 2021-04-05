@@ -76,5 +76,4 @@ while is_running:
 
     manager.update(time_delta)
     manager.draw_ui(window_surface)
-
     pygame.display.update()

@@ -26,7 +26,6 @@ class Player:
         self.was_knight = was_knight
         self.blanks = blanks
         self.trace = trace
-        # to swap the moves parameter
 
     def get_trace(self):
         return self.trace

@@ -3,12 +3,16 @@ from player import Position
 from cell import Cell
 
 
-def is_king(pos1, pos2):
+def is_king(pos1: Position, pos2: Position):
     return abs((pos1 - pos2).x) <= 1 and abs((pos1 - pos2).y) <= 1
 
 
-def is_knight(pos1, pos2):
+def is_knight(pos1: Position, pos2: Position):
     return abs(pos1.x - pos2.x) * abs(pos1.y - pos2.y) == 2
+
+
+def is_diag(pos1: Position, pos2: Position):
+    return abs(pos1.x - pos2.x) == 2 and abs(pos1.y - pos2.y) == 2
 
 
 class Game:
@@ -21,8 +25,12 @@ class Game:
         self.is_ended_local = False
         self.deltas = [Position(0, 1), Position(1, 0), Position(0, -1), Position(-1, 0),
                        Position(1, 1), Position(1, -1), Position(-1, -1), Position(-1, 1),
+
+                       Position(-2, -2), Position(-2, 2), Position(2, -2), Position(2, 2),
+
                        Position(-2, -1), Position(-1, -2), Position(2, 1), Position(1, 2),
                        Position(-2, 1), Position(2, -1), Position(-1, 2), Position(1, -2)]
+
         for ind, i in enumerate(self.players):
             pos = i.get_trace()[-1]
             self.field[pos.x][pos.y] = Cell(1, ind)
@@ -46,10 +54,12 @@ class Game:
     def is_shot_possible(self, pos, s):
         if not (0 <= s.x < self.board_size.x and 0 <= s.y < self.board_size.y):
             return False
+        shoot_from_border = self.is_on_border(pos) and is_diag(pos, s)
         shoot_to_empty = self.field[s.x][s.y].is_empty()
         shoot_blank = s.x + s.y == -2  # and player.get_blanks() > 0
         player_shot = self.field[s.x][s.y].is_player()
-        return is_knight(pos, s) and (player_shot or shoot_to_empty or shoot_blank)
+        return is_knight(pos, s) and (player_shot or shoot_to_empty or shoot_blank) \
+            or shoot_from_border and (player_shot or shoot_to_empty or shoot_blank)
 
     def is_move_possible(self, pos, m, is_knight_=False):
         if not (0 <= m.x < self.board_size.x and 0 <= m.y < self.board_size.y):
@@ -86,7 +96,7 @@ class Game:
                 # something else...
             # TODO: what if the player was shot
             elif player_shot:
-                print('player was shot')
+                print('Player was shot')
                 # player_to_be_killed = self.field[s.x][s.y].get_owner_id()
                 # this will be needed in version 2 (mult players)
                 # self.kill_this_player(player_to_be_killed)
@@ -97,6 +107,20 @@ class Game:
         else:
             raise ValueError('Invalid shot')
 
+    def possible_moves(self, pos, is_knight_=False):
+        # player = self.players[player_index]
+        # pos = player.get_trace()[-1]
+        # is_knight_ = player.get_is_knight()
+        result = [pos + de for de in self.deltas[:8] if self.is_move_possible(pos, pos + de, is_knight_)]
+        if is_knight_:
+            result += [pos + de for de in self.deltas[12:] if self.is_move_possible(pos, pos + de, is_knight_)]
+        return result
+
+    def possible_shots(self, pos):
+        # player = self.players[player_index]
+        # pos = player.get_trace()[-1]
+        return [pos + de for de in self.deltas[8:] if self.is_shot_possible(pos, pos + de)]
+
     def kill_this_player(self, current_player_index):
         player = self.players[current_player_index]
         player.kill()
@@ -104,16 +128,5 @@ class Game:
     def get_field(self):
         return self.field
 
-    def possible_moves(self, pos, is_knight_=False):
-        # player = self.players[player_index]
-        # pos = player.get_trace()[-1]
-        # is_knight_ = player.get_is_knight()
-        result = [pos + de for de in self.deltas[:8] if self.is_move_possible(pos, pos + de, is_knight_)]
-        if is_knight_:
-            result += [pos + de for de in self.deltas[8:] if self.is_move_possible(pos, pos + de, is_knight_)]
-        return result
-
-    def possible_shots(self, pos):
-        # player = self.players[player_index]
-        # pos = player.get_trace()[-1]
-        return [pos + de for de in self.deltas[8:] if self.is_shot_possible(pos, pos + de)]
+    def is_on_border(self, pos):
+        return pos.x == 0 or pos.x == self.board_size.x - 1 or pos.y == 0 or pos.y == self.board_size.y - 1
