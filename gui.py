@@ -2,6 +2,7 @@ import pygame
 import pygame_gui
 import gui_utils
 
+from gui_utils import GUI
 from game import Game
 from move import Move
 from player import Position
@@ -28,36 +29,34 @@ def init_board():
 
 
 game, num_players, current_player, move, shoot = init_board()
-(window_surface, manager, clock, base_panel, board, left_panel, middle_panel, right_panel,
- swap_button, tetra_button, restart_button, sequence) = gui_utils.init_layout(WIDTH, HEIGHT, LMARGIN, RMARGIN, BMARGIN)
-buttons = gui_utils.generate_field(manager, board, game, current_player)
+gui = GUI(WIDTH, HEIGHT, LMARGIN, RMARGIN, BMARGIN, game, current_player)
 
 is_running = True
 while is_running:
-    time_delta = clock.tick(60) / 1000.0
+    time_delta = gui.get_time_delta()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             is_running = False
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                if event.ui_element == restart_button:
+                if event.ui_element == gui.restart_button:
                     game, num_players, current_player, move, shoot = init_board()
-                    gui_utils.kill_all_buttons(buttons)
-                    buttons = gui_utils.generate_field(manager, board, game, current_player)
+                    gui.kill_all_buttons()
+                    gui.generate_field(game, current_player)
                     continue
-                indrow, indbutt = gui_utils.check_field_buttons(event, buttons)
+                indrow, indbutt = gui.check_field_buttons(event)
                 if move is None:
                     move = Position(indrow, indbutt)
                     try:
                         m = Move(False, move, None)
                         game.execute_move(current_player, m)
-                        sequence = gui_utils.update_sequence(sequence, 'shoot', manager, RMARGIN, right_panel)
+                        sequence = gui.update_sequence('Player ' + str(current_player) + ': shoot')
                     except ValueError as e:
                         print(e)
                         move = None
                         shoot = None
                         continue
-                    gui_utils.update_buttons(buttons, manager, board, game, current_player)
+                    gui.update_buttons(game, current_player)
                 else:
                     shoot = Position(indrow, indbutt)
                     try:
@@ -68,19 +67,19 @@ while is_running:
                         shoot = None
                         current_player = (current_player + 1) % num_players
                         if game.is_ended():
-                            board.disable()
-                            sequence = gui_utils.update_sequence(sequence, 'game ended', manager, RMARGIN, right_panel)
+                            gui.board.disable()
+                            sequence = gui.update_sequence('game ended')
                         else:
-                            sequence = gui_utils.update_sequence(sequence, 'move shoot', manager, RMARGIN, right_panel)
+                            sequence = gui.update_sequence('Player ' + str(current_player) + ': move shoot')
                     except ValueError as e:
                         print(e)
                         shoot = None
                         continue
-                    gui_utils.update_buttons(buttons, manager, board, game, current_player)
+                    gui.update_buttons(game, current_player)
 
-        manager.process_events(event)
+        gui.manager.process_events(event)
 
-    manager.update(time_delta)
-    manager.draw_ui(window_surface)
+    gui.manager.update(time_delta)
+    gui.manager.draw_ui(gui.window_surface)
 
     pygame.display.update()
