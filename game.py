@@ -82,11 +82,11 @@ class Game:
 
         else:
             pos_wrong = player.get_trace()[-1]
-            self.field[pos_wrong.x][pos_wrong.y] = Cell(0)
-            player.cancel_move()
-            pos_prev = player.get_trace()[-1]
+            # self.field[pos_wrong.x][pos_wrong.y] = Cell(0)
+            # player.cancel_move()
+            # pos_prev = player.get_trace()[-1]
 
-            self.field[pos_prev.x][pos_prev.y] = Cell(1, current_player_index)
+            # self.field[pos_prev.x][pos_prev.y] = Cell(1, current_player_index)
 
             raise ValueError('Invalid shot')
 

@@ -48,24 +48,31 @@ while is_running:
                 indrow, indbutt = gui_utils.check_field_buttons(event, buttons)
                 if move is None:
                     move = Position(indrow, indbutt)
-                else:
-                    shoot = Position(indrow, indbutt)
                     try:
-                        m = Move(False, move, shoot)
+                        m = Move(False, move, None)
                         g.execute_move(current_player, m)
-                        g.execute_shot(current_player, m)
-                        print('Successful move', move, shoot)
-                        move = None
-                        shoot = None
-                        current_player = (current_player + 1) % num_players
-                        gui_utils.update_buttons(buttons, manager, board, g, current_player)
-                        if g.is_ended():
-                            board.disable()
                     except ValueError as e:
                         print(e)
                         move = None
                         shoot = None
                         continue
+                    gui_utils.update_buttons(buttons, manager, board, g, current_player)
+                else:
+                    shoot = Position(indrow, indbutt)
+                    try:
+                        m = Move(False, move, shoot)
+                        g.execute_shot(current_player, m)
+                        print('Successful move', move, shoot)
+                        move = None
+                        shoot = None
+                        current_player = (current_player + 1) % num_players
+                        if g.is_ended():
+                            board.disable()
+                    except ValueError as e:
+                        print(e)
+                        shoot = None
+                        continue
+                    gui_utils.update_buttons(buttons, manager, board, g, current_player)
 
         manager.process_events(event)
 

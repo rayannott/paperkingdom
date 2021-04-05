@@ -144,6 +144,8 @@ def update_buttons(buttons, manager, board, game, current_player):
                 elif cell.is_player():
                     kill_create_button(buttons, index1, index2, str(cell),
                                        manager, board, 'player', current_player == cell.get_owner_id())
+                # print(cell, end=' ')
+        # print()
 
 
 def check_field_buttons(event, buttons):
