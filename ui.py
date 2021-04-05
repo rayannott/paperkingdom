@@ -5,29 +5,30 @@ from player import Player
 
 
 def get_move():
-    move = input()
-    swap = move.startswith('swap ')
+    move = input().split()
+    swap = move[0] == 'swap'
     m = None
     s = None
     if swap:
-        move = move[5:]
-    if move.startswith('move '):
-        m = Position(int(move[5]), int(move[7]))
-    move = move[9:]
-    if move.startswith('shoot '):
-        s = Position(int(move[6]), int(move[8]))
-    elif move.startswith('noshoot'):
+        move = move[1:]
+    if move[0] in ['move', 'm']:
+        m = Position(int(move[1]), int(move[2]))
+        move = move[3:]
+    else:
+        raise ValueError('Move input could not be parsed')
+
+    if move[0] in ['noshoot', 'ns']:
         s = Position(-1, -1)
+    else:
+        if move[0] in ['shoot', 's']:
+            s = Position(int(move[1]), int(move[2]))
+
     return Move(swap, m, s)
 
 
 def draw_field(field):
     for row in field:
         for cell in row:
-            # if isinstance(cell.t, Player):
-            #     print(cell.t.name, end=' ')
-            # else:
-            #     print(cell.t)
             print(cell.t, end=' ')
         print()
 
@@ -46,7 +47,7 @@ def game_cycle():
 
     while not game_ended:
         # let's print this out
-        print(current_player_index)
+        print('Player ', current_player_index, "'s turn", sep='')
         move = get_move()
         try:
             g.execute_move(current_player_index, move)
@@ -54,7 +55,6 @@ def game_cycle():
             # it doesn't show anything otherwise
             print(e)
             continue
-        # ? is this to keep track of what player's move it is ? twice ?
         current_player_index = (current_player_index + 1) % NUM_PLAYERS
         game_ended = g.is_ended()
 

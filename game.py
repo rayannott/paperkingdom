@@ -1,139 +1,119 @@
 from player import Player
 from player import Position
+from cell import Cell
 
 
-class Cell:
-    """
-    The t parameter is a string; it has a form of <character,number,extra_parameters>
-    Here are some examples:
-    'p4' is a player 4
-    'o2' is a trace left by a player 2
-    'o1u' is a trace of a player 1 that has been used in a tetra
-    'x0' is a shot made by a player 0
-    'n-' is an empty cell
-    """
-
-    def __init__(self, t):
-        self.t = t
-
-    def is_player(self):
-        if self.t[0] == 'p':
-            return True, int(self.t[1:])
-        else:
-            return False, 0
-
-    def is_shot(self):
-        if self.t[0] == 'x':
-            return True, int(self.t[1:])
-        else:
-            return False, 0
-
-    def is_target(self):
-        if self.t[0] == 't':
-            return True
-        else:
-            return False
-
-    def is_trace_used(self):
-        if self.t[-1] == 'u':
-            return True
-        else:
-            return False
-
-    def is_trace(self):
-        if self.t[0] == 'o':
-            return True
-        else:
-            return False
-
-    def is_empty(self):
-        if self.t[0] == 'n':
-            return True
-        else:
-            return False
-
-
-board_x, board_y = 8, 8
-positions = [Position(2, 2), Position(5, 5)]
-names = ['Alan', 'Bill']
-
-
-# is_king = lambda pos1, pos2: abs(pos1.x - pos2.x) <= 1 and abs(pos1.y - pos2.y) <= 1
-# is_knight = lambda pos1, pos2: abs(pos1.x - pos2.x) * abs(pos1.y - pos2.y) == 2
-
-# if two positions given are a KING away from one another
 def is_king(pos1, pos2):
-    return abs(pos1.x - pos2.x) <= 1 and abs(pos1.y - pos2.y) <= 1
+    return abs((pos1 - pos2).x) <= 1 and abs((pos1 - pos2).y) <= 1
 
 
-# -/- KNIGHT -/-
 def is_knight(pos1, pos2):
     return abs(pos1.x - pos2.x) * abs(pos1.y - pos2.y) == 2
 
 
 class Game:
-    # TODO: [in __init__] a clever way to initialise a field configuration: number of players, size of the \
-    #  field. (init_positions, (A times B))
-    def __init__(self, number_of_players):
-
-        self.number_of_players = number_of_players
-        self.field = [[Cell('n-') for _ in range(board_y)] for _ in range(board_x)]
-        # [positions[i] must be in a list here:
-        self.players = [Player(True, False, 0, [positions[i]], names[i]) for i in range(number_of_players)]
+    def __init__(self, players, board_size, interactive=True):
+        self.board_size = board_size
+        self.number_of_players = len(players)
+        self.field = [[Cell(0) for _ in range(board_size.y)] for _ in range(board_size.x)]
+        self.players = players
         self.current_move = 0
         self.is_ended_local = False
+        self.deltas = [Position(0, 1), Position(1, 0), Position(0, -1), Position(-1, 0),
+                       Position(1, 1), Position(1, -1), Position(-1, -1), Position(-1, 1),
+                       Position(-2, -1), Position(-1, -2), Position(2, 1), Position(1, 2),
+                       Position(-2, 1), Position(2, -1), Position(-1, 2), Position(1, -2)]
         for ind, i in enumerate(self.players):
-            self.field[positions[ind].x][positions[ind].y] = Cell('p' + str(ind))  # it has been Cell(i)
-        # self.field[2][2] = Cell(p1)
-        # self.field[5][5] = Cell(p2)
+            pos = i.get_trace()[-1]
+            self.field[pos.x][pos.y] = Cell(1, ind)
 
     def is_ended(self):
-        return self.is_ended_local
+        some_player_cannot_Move = False
+
+        for pl in self.players:
+            pos = pl.get_trace()[-1]
+            is_kn = pl.get_is_knight()
+            poss_moves = self.possible_moves(pos, is_kn)
+            viable_moves = 0
+            for shoot_from in poss_moves:
+                viable_moves += len(self.possible_shots(shoot_from))
+            if viable_moves == 0:
+                some_player_cannot_Move = True
+
+        return self.is_ended_local or some_player_cannot_Move
+
+    # TODO: add num_of_blanks here after s,
+    def is_shot_possible(self, pos, s):
+        if not (0 <= s.x < self.board_size.x and 0 <= s.y < self.board_size.y):
+            return False
+        shoot_to_empty = self.field[s.x][s.y].is_empty()
+        shoot_blank = s.x + s.y == -2  # and player.get_blanks() > 0
+        player_shot = self.field[s.x][s.y].is_player()
+        return is_knight(pos, s) and (player_shot or shoot_to_empty or shoot_blank)
+
+    def is_move_possible(self, pos, m, is_knight_=False):
+        if not (0 <= m.x < self.board_size.x and 0 <= m.y < self.board_size.y):
+            return False
+        if len(self.possible_shots(m)) == 0:
+            return False
+        move_to_empty = self.field[m.x][m.y].is_empty()
+        return (is_king(m, pos) or is_knight_ and is_knight(m, pos)) and move_to_empty
+
+    def execute_move(self, current_player_index, m):
+        player = self.players[current_player_index]
+        pos = player.get_trace()[-1]
+        if self.is_move_possible(pos, m, player.get_is_knight()) and \
+                current_player_index == self.current_move % self.number_of_players:
+            self.players[current_player_index].next_position(m)
+            self.field[m.x][m.y] = Cell(1, current_player_index)
+            self.field[pos.x][pos.y] = Cell(2, current_player_index)
+        else:
+            raise ValueError('Invalid move')
+
+    def execute_shot(self, current_player_index, s):
+        # s = the_move.get_shoot()
+        player = self.players[current_player_index]
+        pos = player.get_trace()[-1]
+        if self.is_shot_possible(pos, s) and \
+                current_player_index == self.current_move % self.number_of_players:
+            self.current_move += 1
+
+            shoot_blank = s.x + s.y == -2 and player.get_blanks() > 0
+            player_shot = self.field[s.x][s.y].is_player()
+            # TODO: blanks
+            if shoot_blank:
+                player.reduce_blanks()
+                # something else...
+            # TODO: what if the player was shot
+            elif player_shot:
+                print('player was shot')
+                # player_to_be_killed = self.field[s.x][s.y].get_owner_id()
+                # this will be needed in version 2 (mult players)
+                # self.kill_this_player(player_to_be_killed)
+                self.field[s.x][s.y] = Cell(3, current_player_index)
+                self.is_ended_local = True  # tmp
+            else:
+                self.field[s.x][s.y] = Cell(3, current_player_index)
+        else:
+            raise ValueError('Invalid shot')
+
+    def kill_this_player(self, current_player_index):
+        player = self.players[current_player_index]
+        player.kill()
 
     def get_field(self):
         return self.field
 
-    def is_move_possible(self, current_player_index, the_move):
-        player = self.players[current_player_index]
-        pos = player.get_trace()[-1]
-        m = the_move.get_move()
-        s = the_move.get_shoot()
-        # TODO: a place for \
-        #  swap = the_move.get_swap()
+    def possible_moves(self, pos, is_knight_=False):
+        # player = self.players[player_index]
+        # pos = player.get_trace()[-1]
+        # is_knight_ = player.get_is_knight()
+        result = [pos + de for de in self.deltas[:8] if self.is_move_possible(pos, pos + de, is_knight_)]
+        if is_knight_:
+            result += [pos + de for de in self.deltas[8:] if self.is_move_possible(pos, pos + de, is_knight_)]
+        return result
 
-        move_to_empty = self.field[m.x][m.y].is_empty()
-        shoot_to_empty = self.field[s.x][s.y].is_empty()
-        shoot_blank = s.x + s.y == -2 and player.get_blanks() > 0
-        player_shot, _ = self.field[s.x][s.y].is_player()
-        # TODO: catch attempts to shoot or move out of the field
-        if (is_king(m, pos) or player.get_is_knight() and is_knight(m, pos)) and move_to_empty:
-            if is_knight(m, s) and (player_shot or shoot_to_empty or shoot_blank):
-                # TODO: blanks
-                if shoot_blank:
-                    player.reduce_blanks()
-                # TODO: what if the player was shot
-                if player_shot:
-                    print('player was shot')
-                    self.is_ended_local = True
-                return True
-            else:
-                return False
-        else:
-            return False
-
-    def execute_move(self, current_player_index, the_move):
-        if self.is_move_possible(current_player_index, the_move) and \
-                current_player_index == self.current_move % self.number_of_players:
-            m = the_move.get_move()
-            s = the_move.get_shoot()
-            player = self.players[current_player_index]
-            pos = player.get_trace()[-1]
-            self.players[current_player_index].next_position(the_move.get_move())
-            # changing the field
-            self.field[m.x][m.y] = Cell('p' + str(current_player_index))
-            self.field[s.x][s.y] = Cell('x' + str(current_player_index))
-            self.field[pos.x][pos.y] = Cell('o' + str(current_player_index))
-
-            self.current_move += 1
-        else:
-            raise ValueError('Invalid move')
+    def possible_shots(self, pos):
+        # player = self.players[player_index]
+        # pos = player.get_trace()[-1]
+        return [pos + de for de in self.deltas[8:] if self.is_shot_possible(pos, pos + de)]
