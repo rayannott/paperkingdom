@@ -49,8 +49,7 @@ while is_running:
                 if move is None:
                     move = Position(indrow, indbutt)
                     try:
-                        m = Move(False, move, None)
-                        g.execute_move(current_player, m)
+                        g.execute_move(current_player, move)
                     except ValueError as e:
                         print(e)
                         move = None
@@ -60,8 +59,7 @@ while is_running:
                 else:
                     shoot = Position(indrow, indbutt)
                     try:
-                        m = Move(False, move, shoot)
-                        g.execute_shot(current_player, m)
+                        g.execute_shot(current_player, shoot)
                         print('Successful move', move, shoot)
                         move = None
                         shoot = None

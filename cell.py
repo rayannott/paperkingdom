@@ -33,10 +33,10 @@ class Cell:
         types = ['n', 'p', 'o', 'x', 't', 'w']
         res = types[self.cell_type]
         if self.player or self.trace or self.shot:
-            res += str(self.cell_type)
+            res += str(self.owner_id)
         else:
             res += '-'
-        if self.trace:
+        if self.trace and self.parameter:
             res += str('u')
         return res
 
