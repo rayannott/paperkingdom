@@ -52,5 +52,16 @@
   },
   "base.middle_panel":{
     "prototype": "base"
+  },
+  "base.right_panel":{
+    "prototype": "base"
+  },
+  "base.right_panel.sequence":{
+    "colours":{
+      "normal_text": "#c0c0c0"
+    },
+    "misc":{
+      "border_width" : "0"
+    }
   }
 }

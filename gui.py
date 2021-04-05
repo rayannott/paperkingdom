@@ -12,6 +12,7 @@ HEIGHT = 600
 LMARGIN = 200
 RMARGIN = 200
 BMARGIN = 10
+assert WIDTH > LMARGIN + RMARGIN
 
 
 def init_board():
@@ -27,10 +28,9 @@ def init_board():
 
 
 game, num_players, current_player, move, shoot = init_board()
-(window_surface, manager, clock, base_panel, board, left_panel,
- swap_button, tetra_button, restart_button) = gui_utils.init_layout(WIDTH, HEIGHT, LMARGIN, RMARGIN, BMARGIN)
+(window_surface, manager, clock, base_panel, board, left_panel, middle_panel, right_panel,
+ swap_button, tetra_button, restart_button, sequence) = gui_utils.init_layout(WIDTH, HEIGHT, LMARGIN, RMARGIN, BMARGIN)
 buttons = gui_utils.generate_field(manager, board, game, current_player)
-
 
 is_running = True
 while is_running:
@@ -51,6 +51,7 @@ while is_running:
                     try:
                         m = Move(False, move, None)
                         game.execute_move(current_player, m)
+                        sequence = gui_utils.update_sequence(sequence, 'shoot', manager, RMARGIN, right_panel)
                     except ValueError as e:
                         print(e)
                         move = None
@@ -68,6 +69,9 @@ while is_running:
                         current_player = (current_player + 1) % num_players
                         if game.is_ended():
                             board.disable()
+                            sequence = gui_utils.update_sequence(sequence, 'game ended', manager, RMARGIN, right_panel)
+                        else:
+                            sequence = gui_utils.update_sequence(sequence, 'move shoot', manager, RMARGIN, right_panel)
                     except ValueError as e:
                         print(e)
                         shoot = None

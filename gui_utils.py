@@ -1,9 +1,6 @@
 import pygame
 import pygame_gui
 
-from player import Position
-from move import Move
-
 
 def init_layout(width, height, l_margin, r_margin, button_margin):
     pygame.init()
@@ -19,7 +16,14 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
         starting_layer_height=1,
         object_id='base'
     )
-    middle_panel_size = width - l_margin - r_margin + 3
+    left_panel = pygame_gui.elements.ui_panel.UIPanel(
+        relative_rect=pygame.Rect((0, 0), (l_margin, height)),
+        manager=manager,
+        starting_layer_height=1,
+        container=base_panel,
+        object_id='left_panel'
+    )
+    middle_panel_size = width - l_margin - r_margin
     middle_panel = pygame_gui.elements.ui_panel.UIPanel(
         relative_rect=pygame.Rect((l_margin, 0), (middle_panel_size, height)),
         manager=manager,
@@ -27,7 +31,21 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
         container=base_panel,
         object_id='middle_panel'
     )
-    board_size = min(middle_panel_size, height) - 4
+    right_panel = pygame_gui.elements.ui_panel.UIPanel(
+        relative_rect=pygame.Rect((width - r_margin, 0), (r_margin, height)),
+        manager=manager,
+        starting_layer_height=1,
+        container=base_panel,
+        object_id='right_panel'
+    )
+    move_sequence = pygame_gui.elements.ui_text_box.UITextBox(
+        relative_rect=pygame.Rect(0, 0, r_margin - 7, 80),
+        html_text="move shoot",
+        manager=manager,
+        container=right_panel,
+        object_id='sequence',
+    )
+    board_size = min(middle_panel_size, height) - 6
     top_margin = (height - board_size) // 2
     board = pygame_gui.elements.ui_panel.UIPanel(
         relative_rect=pygame.Rect((1, top_margin - 2), (board_size, board_size)),
@@ -36,13 +54,7 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
         container=middle_panel,
         object_id='board'
     )
-    left_panel = pygame_gui.elements.ui_panel.UIPanel(
-        relative_rect=pygame.Rect((0, 0), (l_margin, height)),
-        manager=manager,
-        starting_layer_height=1,
-        container=base_panel,
-        object_id='left_panel'
-    )
+
     total_empty = button_margin * 3
     button_size_x = (l_margin - total_empty) / 2
     button_size_y = 20
@@ -51,26 +63,15 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
         text='Swap',
         manager=manager,
         container=left_panel,
-        object_id='butt',
-        anchors={
-            'left': 'left',
-            'right': 'right',
-            'top': 'top',
-            'bottom': 'bottom'
-        }
+        object_id='butt'
     )
     tetra_button = pygame_gui.elements.ui_button.UIButton(
-        relative_rect=pygame.Rect(l_margin - button_margin - button_size_x, button_margin, button_size_x, button_size_y),
+        relative_rect=pygame.Rect(l_margin - button_margin - button_size_x, button_margin, button_size_x,
+                                  button_size_y),
         text='Tetra',
         manager=manager,
         container=left_panel,
-        object_id='butt',
-        anchors={
-            'left': 'left',
-            'right': 'right',
-            'top': 'top',
-            'bottom': 'bottom'
-        }
+        object_id='butt'
     )
     restart_button = pygame_gui.elements.ui_button.UIButton(
         relative_rect=pygame.Rect(button_margin, 2 * button_margin + button_size_y, button_size_x, button_size_y),
@@ -85,7 +86,8 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
             'bottom': 'bottom'
         }
     )
-    return window_surface, manager, clock, base_panel, board, left_panel, swap_button, tetra_button, restart_button
+    return (window_surface, manager, clock, base_panel, board, left_panel, middle_panel, right_panel,
+            swap_button, tetra_button, restart_button, move_sequence)
 
 
 def generate_field(manager, board, game, current_player):
@@ -146,14 +148,14 @@ def update_buttons(buttons, manager, board, game, current_player):
     for index1, (rowf, rowg) in enumerate(zip(f, buttons)):
         for index2, (cell, button) in enumerate(zip(rowf, rowg)):
             # if button.object_ids[2] in [None, 'player']:
-                if cell.is_trace():
-                    kill_create_button(buttons, index1, index2, str(cell), manager, board, 'trace', True)
-                elif cell.is_shot():
-                    kill_create_button(buttons, index1, index2, str(cell), manager, board, 'shot', True)
-                elif cell.is_player():
-                    kill_create_button(buttons, index1, index2, str(cell),
-                                       manager, board, 'player', current_player == cell.get_owner_id())
-                # print(cell, end=' ')
+            if cell.is_trace():
+                kill_create_button(buttons, index1, index2, str(cell), manager, board, 'trace', True)
+            elif cell.is_shot():
+                kill_create_button(buttons, index1, index2, str(cell), manager, board, 'shot', True)
+            elif cell.is_player():
+                kill_create_button(buttons, index1, index2, str(cell),
+                                   manager, board, 'player', current_player == cell.get_owner_id())
+            # print(cell, end=' ')
         # print()
 
 
@@ -163,3 +165,15 @@ def check_field_buttons(event, buttons):
             if event.ui_element == butt:
                 return indrow, indbutt
     return -1, -1
+
+
+def update_sequence(sequence, text, manager, r_margin, right_panel):
+    sequence.kill()
+    move_sequence = pygame_gui.elements.ui_text_box.UITextBox(
+        relative_rect=pygame.Rect(0, 0, r_margin - 7, 80),
+        html_text=text,
+        manager=manager,
+        container=right_panel,
+        object_id='sequence',
+    )
+    return move_sequence
