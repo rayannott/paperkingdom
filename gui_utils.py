@@ -4,6 +4,7 @@ import pygame_gui
 from player import Position
 from move import Move
 
+
 def init_layout(width, height, l_margin, r_margin, button_margin):
     pygame.init()
 
@@ -18,31 +19,38 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
         starting_layer_height=1,
         object_id='base'
     )
-    board_size = min(width - l_margin - r_margin, height)
-    left_margin = (width - board_size) // 2
+    middle_panel_size = width - l_margin - r_margin + 3
+    middle_panel = pygame_gui.elements.ui_panel.UIPanel(
+        relative_rect=pygame.Rect((l_margin, 0), (middle_panel_size, height)),
+        manager=manager,
+        starting_layer_height=1,
+        container=base_panel,
+        object_id='middle_panel'
+    )
+    board_size = min(middle_panel_size, height) - 4
     top_margin = (height - board_size) // 2
     board = pygame_gui.elements.ui_panel.UIPanel(
-        relative_rect=pygame.Rect((left_margin, top_margin), (board_size, board_size)),
+        relative_rect=pygame.Rect((1, top_margin - 2), (board_size, board_size)),
         manager=manager,
         starting_layer_height=1,
-        container=base_panel,
+        container=middle_panel,
         object_id='board'
     )
-    left_board = pygame_gui.elements.ui_panel.UIPanel(
-        relative_rect=pygame.Rect((0, 0), (left_margin, height)),
+    left_panel = pygame_gui.elements.ui_panel.UIPanel(
+        relative_rect=pygame.Rect((0, 0), (l_margin, height)),
         manager=manager,
         starting_layer_height=1,
         container=base_panel,
-        object_id='leftboard'
+        object_id='left_panel'
     )
     total_empty = button_margin * 3
-    button_size_x = (left_margin - total_empty) / 2
+    button_size_x = (l_margin - total_empty) / 2
     button_size_y = 20
     swap_button = pygame_gui.elements.ui_button.UIButton(
         relative_rect=pygame.Rect(button_margin, button_margin, button_size_x, button_size_y),
         text='Swap',
         manager=manager,
-        container=left_board,
+        container=left_panel,
         object_id='butt',
         anchors={
             'left': 'left',
@@ -52,10 +60,10 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
         }
     )
     tetra_button = pygame_gui.elements.ui_button.UIButton(
-        relative_rect=pygame.Rect(left_margin - button_margin - button_size_x, button_margin, button_size_x, button_size_y),
+        relative_rect=pygame.Rect(l_margin - button_margin - button_size_x, button_margin, button_size_x, button_size_y),
         text='Tetra',
         manager=manager,
-        container=left_board,
+        container=left_panel,
         object_id='butt',
         anchors={
             'left': 'left',
@@ -68,7 +76,7 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
         relative_rect=pygame.Rect(button_margin, 2 * button_margin + button_size_y, button_size_x, button_size_y),
         text='Restart',
         manager=manager,
-        container=left_board,
+        container=left_panel,
         object_id='restart',
         anchors={
             'left': 'left',
@@ -77,7 +85,7 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
             'bottom': 'bottom'
         }
     )
-    return window_surface, manager, clock, base_panel, board, left_board, swap_button, tetra_button, restart_button
+    return window_surface, manager, clock, base_panel, board, left_panel, swap_button, tetra_button, restart_button
 
 
 def generate_field(manager, board, game, current_player):
@@ -85,12 +93,13 @@ def generate_field(manager, board, game, current_player):
     rows = len(f)
     columns = len(f[0])
     w, h = board.get_container().get_rect().size
-    w, h = w / rows, h / columns
+    w1, h1 = w // rows, h // columns
+    diff1, diff2 = w - w1 * rows, h - h1 * columns
     buttons = []
     for indrow, row in enumerate(f):
         buttons.append([])
         for indcell, cell in enumerate(row):
-            rect = pygame.Rect(w * indrow, h * indcell, w, h)
+            rect = pygame.Rect(w1 * indrow + diff1 // 2, h1 * indcell + diff2 // 2, w1, h1)
             if cell.is_player():
                 butt = pygame_gui.elements.ui_button.UIButton(
                     relative_rect=rect,

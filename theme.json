@@ -47,7 +47,10 @@
       "border_width" : "0"
     }
   },
-  "base.leftboard":{
+  "base.left_panel":{
+    "prototype": "base"
+  },
+  "base.middle_panel":{
     "prototype": "base"
   }
 }
