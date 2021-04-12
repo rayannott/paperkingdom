@@ -104,6 +104,9 @@ class Game:
     def get_field(self):
         return self.field
 
+    def get_traces(self):
+        return [pl.get_trace() for pl in self.players]
+
     def possible_moves(self, pos, is_knight_=False):
         # player = self.players[player_index]
         # pos = player.get_trace()[-1]

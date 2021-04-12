@@ -1,7 +1,7 @@
 {
   "defaults": {
     "colours": {
-      "normal_bg": "#81dba8",
+      "normal_bg": "#81DBA8",
       "hovered_bg": "#35393e",
       "disabled_bg": "#25292e",
       "selected_bg": "#193754",
@@ -23,19 +23,38 @@
       "unfilled_bar": "#CCCCCC"
     }
   },
-  "board.trace":{
-    "colours": {
-      "disabled_bg": "#604545",
-      "disabled_text": "#AAAAAA"
-    }
-  },
-  "board.shot":{
+  "board.trace0":{
     "colours": {
       "disabled_bg": "#454560",
       "disabled_text": "#AAAAAA"
     }
   },
-  "board.player": {
+  "board.shot0":{
+    "colours": {
+      "disabled_bg": "#455260",
+      "disabled_text": "#AAAAAA"
+    }
+  },
+  "board.player0": {
+    "colours": {
+      "normal_bg": "#85AAFF",
+      "disabled_bg": "#5F84D9",
+      "disabled_text": "#695400"
+    }
+  },
+  "board.trace1":{
+    "colours": {
+      "disabled_bg": "#917D3D",
+      "disabled_text": "#AAAAAA"
+    }
+  },
+  "board.shot1":{
+    "colours": {
+      "disabled_bg": "#91533D",
+      "disabled_text": "#AAAAAA"
+    }
+  },
+  "board.player1": {
     "colours": {
       "normal_bg": "#ffda85",
       "disabled_bg": "#d9b45f",

@@ -21,6 +21,7 @@ def init_board():
 class GUI:
 
     def __init__(self, width, height, l_margin, r_margin, button_margin, window_surface):
+        self.l_margin = l_margin
         self.r_margin = r_margin
         self.window_surface = window_surface
         self.game, self.num_players, self.current_player, self.move, self.shoot = init_board()
@@ -106,7 +107,8 @@ class GUI:
             object_id='exit'
         )
         self.exit_button = pygame_gui.elements.ui_button.UIButton(
-            relative_rect=pygame.Rect(button_margin, height - 2*(button_margin + button_size_y), 2 * button_size_x + button_margin, 2 * button_size_y),
+            relative_rect=pygame.Rect(button_margin, height - 2 * (button_margin + button_size_y),
+                                      2 * button_size_x + button_margin, 2 * button_size_y),
             text='Menu',
             manager=self.manager,
             container=self.left_panel,
@@ -130,16 +132,18 @@ class GUI:
                 if cell.is_player():
                     butt = pygame_gui.elements.ui_button.UIButton(
                         relative_rect=rect,
+                        # text='',
                         text=str(cell),
                         manager=self.manager,
                         container=self.board,
-                        object_id='player'
+                        object_id='player' + str(cell.get_owner_id())
                     )
                     if current_player == cell.get_owner_id():
                         butt.disable()
                 else:
                     butt = pygame_gui.elements.ui_button.UIButton(
                         relative_rect=rect,
+                        # text='',
                         text=str(cell),
                         manager=self.manager,
                         container=self.board
@@ -151,6 +155,7 @@ class GUI:
         self.buttons[index1][index2].kill()
         self.buttons[index1][index2] = pygame_gui.elements.ui_button.UIButton(
             relative_rect=rect,
+            # text='',
             text=text,
             manager=self.manager,
             container=self.board,
@@ -164,19 +169,36 @@ class GUI:
             for butt in row:
                 butt.kill()
 
-    def update_buttons(self, game, current_player):
-        f = game.get_field()
+    def update_buttons(self):
+        f = self.game.get_field()
         for index1, (rowf, rowg) in enumerate(zip(f, self.buttons)):
             for index2, (cell, button) in enumerate(zip(rowf, rowg)):
                 # if button.object_ids[2] in [None, 'player']:
                 if cell.is_trace():
-                    self.kill_create_button(index1, index2, str(cell), 'trace', True)
+                    self.kill_create_button(index1, index2, str(cell), 'trace' + str(cell.get_owner_id()), True)
                 elif cell.is_shot():
-                    self.kill_create_button(index1, index2, str(cell), 'shot', True)
+                    self.kill_create_button(index1, index2, str(cell), 'shot' + str(cell.get_owner_id()), True)
                 elif cell.is_player():
-                    self.kill_create_button(index1, index2, str(cell), 'player', current_player == cell.get_owner_id())
+                    self.kill_create_button(index1, index2, str(cell), 'player' + str(cell.get_owner_id()),
+                                            self.current_player == cell.get_owner_id())
             #     print(cell, end=' ')
             # print()
+
+    def draw_traces(self):
+        for trace in self.game.get_traces():
+            index = 0
+            for pos in trace[:-1]:
+                button1 = self.buttons[pos.x][pos.y]
+                center1 = button1.get_abs_rect().center
+                button2 = self.buttons[trace[index + 1].x][trace[index + 1].y]
+                center2 = button2.get_abs_rect().center
+
+                pygame.draw.line(self.window_surface,
+                                 pygame.Color(0, 0, 0),
+                                 center1,
+                                 center2,
+                                 8)
+                index += 1
 
     def check_field_buttons(self, event):
         for indrow, row in enumerate(self.buttons):
@@ -219,7 +241,7 @@ class GUI:
                             try:
                                 self.game.execute_move(self.current_player, self.move)
                                 self.update_sequence('Player ' + str(self.current_player) + ': shoot')
-                                self.update_buttons(self.game, self.current_player)
+                                self.update_buttons()
                             except ValueError as e:
                                 print(e)
                                 self.move = None
@@ -241,12 +263,12 @@ class GUI:
                             except ValueError as e:
                                 print(e)
                                 continue
-                            self.update_buttons(self.game, self.current_player)
+                            self.update_buttons()
 
                 self.manager.process_events(event)
 
             self.manager.update(time_delta)
             self.manager.draw_ui(self.window_surface)
-
+            self.draw_traces()
             pygame.display.update()
         return continue_outer_loop
