@@ -80,7 +80,7 @@ class GUI:
             text='Swap',
             manager=self.manager,
             container=self.left_panel,
-            object_id='butt'
+            object_id='swap'
         )
         self.tetra_button = pygame_gui.elements.ui_button.UIButton(
             relative_rect=pygame.Rect(l_margin - button_margin - button_size_x, button_margin, button_size_x,
@@ -88,20 +88,21 @@ class GUI:
             text='Tetra',
             manager=self.manager,
             container=self.left_panel,
-            object_id='butt'
+            object_id='tetra'
         )
         self.restart_button = pygame_gui.elements.ui_button.UIButton(
             relative_rect=pygame.Rect(button_margin, 2 * button_margin + button_size_y, button_size_x, button_size_y),
             text='Restart',
             manager=self.manager,
             container=self.left_panel,
-            object_id='restart',
-            anchors={
-                'left': 'left',
-                'right': 'right',
-                'top': 'top',
-                'bottom': 'bottom'
-            }
+            object_id='restart'
+        )
+        self.exit_button = pygame_gui.elements.ui_button.UIButton(
+            relative_rect=pygame.Rect(button_margin, height - 2*(button_margin + button_size_y), 2 * button_size_x + button_margin, 2 * button_size_y),
+            text='Menu',
+            manager=self.manager,
+            container=self.left_panel,
+            object_id='exit'
         )
         self.buttons = None
         self.generate_field(self.game, self.current_player)
@@ -187,12 +188,14 @@ class GUI:
         )
 
     def game_loop(self):
+        continue_outer_loop = True
         is_running = True
         while is_running:
             time_delta = self.clock.tick(60) / 1000.0
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     is_running = False
+                    continue_outer_loop = False
                 if event.type == pygame.USEREVENT:
                     if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                         if event.ui_element == self.restart_button:
@@ -200,6 +203,8 @@ class GUI:
                             self.kill_all_buttons()
                             self.generate_field(self.game, self.current_player)
                             continue
+                        elif event.ui_element == self.exit_button:
+                            is_running = False
                         indrow, indbutt = self.check_field_buttons(event)
                         if self.move is None:
                             self.move = Position(indrow, indbutt)
@@ -236,3 +241,4 @@ class GUI:
             self.manager.draw_ui(self.window_surface)
 
             pygame.display.update()
+        return continue_outer_loop
