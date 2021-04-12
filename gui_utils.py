@@ -97,6 +97,14 @@ class GUI:
             container=self.left_panel,
             object_id='restart'
         )
+        self.save_game_button = pygame_gui.elements.ui_button.UIButton(
+            relative_rect=pygame.Rect(button_margin, height - 4 * (button_margin + button_size_y),
+                                      2 * button_size_x + button_margin, 2 * button_size_y),
+            text='Save game',
+            manager=self.manager,
+            container=self.left_panel,
+            object_id='exit'
+        )
         self.exit_button = pygame_gui.elements.ui_button.UIButton(
             relative_rect=pygame.Rect(button_margin, height - 2*(button_margin + button_size_y), 2 * button_size_x + button_margin, 2 * button_size_y),
             text='Menu',
