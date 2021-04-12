@@ -13,25 +13,29 @@ class Position:
         return Position(self.x - other.x, self.y - other.y)
 
 
-class Options:
-    def __init__(self, name, shoot_from_edges: bool, obtain_tetras: bool, ):
-        pass
-
-
 # TODO: add options
 class Player:
-    def __init__(self, is_knight: bool, was_knight: bool, blanks: int, trace: list, is_alive=True,
-                 options: Options=None):
+    def __init__(self,
+                 is_knight: bool,
+                 was_knight: bool,
+                 blanks: int,
+                 trace: list,
+                 name: str,
+                 colour: str,
+                 is_alive=True):
         self.is_knight = is_knight
         self.was_knight = was_knight
         self.blanks = blanks
         self.trace = trace
+        self.name = name
+        self.colour = colour
+        self.is_alive = is_alive
 
     def get_trace(self):
         return self.trace
 
-    def get_is_knight(self):
-        return self.is_knight
+    # def get_is_knight(self):
+    #     return self.is_knight
 
     def get_blanks(self):
         return self.blanks

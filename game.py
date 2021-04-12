@@ -1,7 +1,8 @@
 from player import Player
 from player import Position
 from cell import Cell
-
+from json import dump
+from datetime.datetime import now
 
 def is_king(pos1: Position, pos2: Position):
     """
@@ -25,7 +26,7 @@ def is_diag(pos1: Position, pos2: Position):
 
 
 class Game:
-    def __init__(self, players, board_size, interactive=True):
+    def __init__(self, players, board_size, current_move=0, interactive=True):
         """
         levels (fuck levels!):
         1 - core
@@ -37,7 +38,7 @@ class Game:
         self.number_of_players = len(players)
         self.field = [[Cell(0) for _ in range(board_size.y)] for _ in range(board_size.x)]
         self.players = players
-        self.current_move = 0
+        self.current_move = current_move
         self.is_ended_local = False
         self.deltas = [Position(0, 1), Position(1, 0), Position(0, -1), Position(-1, 0),
                        Position(1, 1), Position(1, -1), Position(-1, -1), Position(-1, 1),
@@ -46,7 +47,9 @@ class Game:
 
                        Position(-2, -1), Position(-1, -2), Position(2, 1), Position(1, 2),
                        Position(-2, 1), Position(2, -1), Position(-1, 2), Position(1, -2)]
-
+        self.init_config = self.convert_game_to_config()
+        self.moves_save = []
+        self.tmp_dict = {}
         for ind, i in enumerate(self.players):
             pos = i.get_trace()[-1]
             self.field[pos.x][pos.y] = Cell(1, ind)
@@ -58,7 +61,7 @@ class Game:
         some_player_cannot_move = False
         for pl in self.players:
             pos = pl.get_trace()[-1]
-            is_kn = pl.get_is_knight()
+            is_kn = pl.is_knight
             poss_moves = self.possible_moves(pos, is_kn)
             viable_moves = 0
             for shoot_from in poss_moves:
@@ -107,6 +110,10 @@ class Game:
             self.players[current_player_index].next_position(m)
             self.field[m.x][m.y] = Cell(1, current_player_index)  # this is a "player" now
             self.field[pos.x][pos.y] = Cell(2, current_player_index)  # this is a "trace" now
+            self.tmp_dict = {
+                'player_id': current_player_index,
+                'move': [m.x, m.y]
+            }
         else:
             raise ValueError('Invalid move')
 
@@ -138,6 +145,8 @@ class Game:
                 self.is_ended_local = True  # tmp
             else:
                 self.field[s.x][s.y] = Cell(3, current_player_index)
+                self.tmp_dict['shot'] = [s.x, s.y]
+                self.moves_save.append(self.tmp_dict)
         else:
             raise ValueError('Invalid shot')
 
@@ -156,6 +165,45 @@ class Game:
     def kill_this_player(self, current_player_index):
         player = self.players[current_player_index]
         player.kill()
+
+    def convert_game_to_config(self):
+        config = {
+            'cells': [
+                [
+                    {
+                        'cell_type': cell.cell_type,
+                        'owner_id': cell.owner_id,
+                        'parameter': cell.parameter
+                    }
+                    for cell in row
+                ]
+                for row in self.field
+            ],
+            'players': [
+                {
+                    'id': ind,
+                    'name': pl.name,
+                    'is_knight': pl.is_knight,
+                    'is_alive': pl.is_alive,
+                    'colour': pl.colour
+                }
+                for ind, pl in enumerate(self.players)
+            ]
+        }
+        return config
+
+    def save_the_game(self):
+        game = {
+            'board_size': [self.board_size.x, self.board_size.y],
+            'is_finished': self.is_ended(),
+            'init_config': self.init_config,
+            'moves': self.moves_save,
+            'final_config': self.convert_game_to_config()
+        }
+        filename = str(now())
+        with open(filename + ".json", "w") as write_file:
+            dump(game, write_file, indent=4)
+
 
     def get_field(self):
         return self.field
