@@ -21,14 +21,12 @@ class Player:
                  blanks: int,
                  trace: list,
                  name: str,
-                 colour: str,
                  is_alive=True):
         self.is_knight = is_knight
         self.was_knight = was_knight
         self.blanks = blanks
         self.trace = trace
         self.name = name
-        self.colour = colour
         self.is_alive = is_alive
 
     def get_trace(self):

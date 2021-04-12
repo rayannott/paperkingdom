@@ -16,8 +16,8 @@ BMARGIN = 10
 
 def init_board():
     board_size = Position(8, 8)
-    players_ = [Player(False, False, 0, [Position(2, 2)]),
-                Player(False, False, 0, [Position(5, 5)])]
+    players_ = [Player(False, False, 0, [Position(2, 2)], 'Alan'),
+                Player(False, False, 0, [Position(5, 5)], 'Bo')]
     g_ = Game(players_, board_size)
     n_ = len(players_)
     c_ = 0

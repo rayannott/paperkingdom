@@ -2,7 +2,7 @@ from player import Player
 from player import Position
 from cell import Cell
 from json import dump
-from datetime.datetime import now
+from datetime import datetime
 
 def is_king(pos1: Position, pos2: Position):
     """
@@ -105,7 +105,7 @@ class Game:
         """
         player = self.players[current_player_index]
         pos = player.get_trace()[-1]
-        if self.is_move_possible(pos, m, player.get_is_knight()) and \
+        if self.is_move_possible(pos, m, player.is_knight) and \
                 current_player_index == self.current_move % self.number_of_players:
             self.players[current_player_index].next_position(m)
             self.field[m.x][m.y] = Cell(1, current_player_index)  # this is a "player" now
@@ -185,7 +185,6 @@ class Game:
                     'name': pl.name,
                     'is_knight': pl.is_knight,
                     'is_alive': pl.is_alive,
-                    'colour': pl.colour
                 }
                 for ind, pl in enumerate(self.players)
             ]
@@ -200,7 +199,7 @@ class Game:
             'moves': self.moves_save,
             'final_config': self.convert_game_to_config()
         }
-        filename = str(now())
+        filename = str(datetime.now())
         with open(filename + ".json", "w") as write_file:
             dump(game, write_file, indent=4)
 
