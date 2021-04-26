@@ -132,8 +132,8 @@ class GUI:
                 if cell.is_player():
                     butt = pygame_gui.elements.ui_button.UIButton(
                         relative_rect=rect,
-                        # text='',
-                        text=str(cell),
+                        text='',
+                        # text=str(cell),
                         manager=self.manager,
                         container=self.board,
                         object_id='player' + str(cell.get_owner_id())
@@ -143,8 +143,8 @@ class GUI:
                 else:
                     butt = pygame_gui.elements.ui_button.UIButton(
                         relative_rect=rect,
-                        # text='',
-                        text=str(cell),
+                        text='',
+                        # text=str(cell),
                         manager=self.manager,
                         container=self.board
                     )
@@ -155,8 +155,8 @@ class GUI:
         self.buttons[index1][index2].kill()
         self.buttons[index1][index2] = pygame_gui.elements.ui_button.UIButton(
             relative_rect=rect,
-            # text='',
-            text=text,
+            text='',
+            # text=text,
             manager=self.manager,
             container=self.board,
             object_id=object_id
