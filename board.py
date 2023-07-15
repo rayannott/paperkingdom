@@ -13,9 +13,7 @@ class Board:
         print(f'moves played: {len(self.move_history)}')
         print(f'player #{self.player_to_move} moves: {self.get_num_of_legal_moves()}')
         print(f'dscr: {self.get_ngd()}')
-        this_eval = self.eval_board()
-        self.eval_history.append(this_eval) # logging the evals
-        print(f'eval: {this_eval:.2f}')
+        print(f'eval: {self.current_eval:.2f}')
         someone_can_win = self.can_win()
         if someone_can_win and self.victor is None:
             print(f'can win by {someone_can_win}')
@@ -29,6 +27,7 @@ class Board:
         self.victor = None
         self.move_history: list[CompleteMove] = []
         self.eval_history: list[float] = []
+        self.current_eval = self.eval_board()
 
     def set_state_from_ngd(self, ngd: str) -> int:
         '''Plays the game given by the normal game description (NGD) and
@@ -192,6 +191,8 @@ class Board:
         self.move_history.append(complete_move)
         self.player_to_move = 1 - self.player_to_move
         self.victor = self.check_victory()
+        self.current_eval = self.eval_board()
+        self.eval_history.append(self.current_eval)
 
     def get_num_of_legal_moves(self) -> int:
         return len(self.get_complete_moves())
@@ -207,19 +208,21 @@ class Board:
 
     def eval_board(self) -> float:
         '''Evaluates the board. Gives a float score.
-        +1 --- best for the blue player;
-        -1 --- best for the red player'''
-        blue_moves = self._get_complete_moves_for(player_id=0)
-        red_moves = self._get_complete_moves_for(player_id=1)
+        +1 --- best for the red player;
+        -1 --- best for the blue player'''
+        if self.victor is not None:
+            return 1 if self.victor == 0 else -1
+        red_moves = self._get_complete_moves_for(player_id=0)
+        blue_moves = self._get_complete_moves_for(player_id=1)
         if self.player_to_move == 0:
-            for cm in blue_moves: 
-                if cm.shot == self.players_positions[1]: return 1 # if blue can win and it's their move
+            for cm in red_moves: 
+                if cm.shot == self.players_positions[1]: return 1 # if red can win and it's their move
             ...
         else:
-            for cm in red_moves:
-                if cm.shot == self.players_positions[0]: return -1 # if red can win and it's their move
+            for cm in blue_moves:
+                if cm.shot == self.players_positions[0]: return -1 # if blue can win and it's their move
             ...
-        eval_ = (len(blue_moves) - len(red_moves))/(len(blue_moves) + len(red_moves))
+        eval_ = (len(red_moves) - len(blue_moves))/(len(blue_moves) + len(red_moves))
         return eval_ + \
             abs(eval_) * (-1 if self.player_to_move == 0 else 1) * 0.15 + \
             -0.1 * is_pos_outside_arena(self.players_positions[0]) + 0.1 * is_pos_outside_arena(self.players_positions[1])
