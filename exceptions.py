@@ -12,3 +12,6 @@ class InvalidShotException(CustomException):
 
 class InvalidCompleteMoveException(CustomException):
     pass
+
+class GameIsOverException(CustomException):
+    pass
