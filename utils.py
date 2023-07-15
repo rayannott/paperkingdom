@@ -15,19 +15,35 @@ NUM_OF_PLAYERS = 2
 def make_move(str_coord: str) -> 'Pos':
     return Pos(YAXIS_BACK[str_coord[1]], XAXIS_BACK[str_coord[0]])
 
+
 def make_cm(str_coord_move: str, str_coord_shot: str) -> 'CompleteMove':
     return CompleteMove(make_move(str_coord_move), make_move(str_coord_shot))
+
 
 def make(cm_normal: str) -> 'CompleteMove':
     '''Returns a CompleteMove object constructed with
     the complete move normal notation'''
     return make_cm(*cm_normal.split('/'))
 
+
 def is_pos_on_border(pos: 'Pos') -> bool:
     return pos.x in {2, 9} or pos.y in {2, 9}
 
+
 def is_pos_outside_arena(pos: 'Pos') -> bool:
     return pos.x < 2 or pos.x > 9 or pos.y < 2 or pos.y > 9
+
+
+def min_distance_to_edge(pos: 'Pos') -> int:
+    return min(
+        min(BOARD_SIZE - 1 - pos.x, pos.x),
+        min(BOARD_SIZE - 1 - pos.y, pos.y)
+    )
+
+
+def clip(value: float, min_: float, max_: float) -> float:
+    return max(min_, min(max_, value))
+
 
 @dataclass
 class Pos:
