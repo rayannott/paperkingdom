@@ -2,3 +2,7 @@
 # a game against the PickBest bot
 f7/g5 i3/h5, g6/h4 j4/h6, f5/g7 j3/i5, f4/g2 i2/g3, f3/h2 j1/k3, f2/g4 k1/i0, e3/d1 k2/i1, e4/d2 l3/k5, e5/d3 k4/l2, f6/d5 j5/l6, e7/c6 i6/k7, f8/h7 j7/i9, g8/i7 i8/g9, f9/h8 j9/hb, ga/e9 ja/h9, fb/ha k9/ia, ea/gb k8/la, d9/fa l8/ka, c9/bb l7/j6, ca/eb k6/j8, b9/cb r.
 
+[15.07.2023 16:33]
+# a game against the Minimax(depth=3) bot
+e7/f5 h4/g6, f7/g5 i5/k6, g8/h6 j5/k3, h9/i7 j4/i2, g9/ib i3/h1, h8/j7 j2/i4, g7/i8 i1/j3, f6/g4 j1/l0, e5/c6 k2/j0, d6/c4 k1/i0, d7/b6 l2/k0, d8/e6 l3/k5, d9/b8 k4/j6, e9/cb l5/k7, ea/f8 l6/k8, fb/ha l7/k9, eb/ga l8/ka, da/f9 l9/ja, c9/db la/j9, c8/ba kb/ia, c7/b9 jb/i9, b7/a9 r.
+
