@@ -5,6 +5,8 @@ XAXIS = 'abcdefghijkl'
 YAXIS_BACK = {ch: i for i, ch in enumerate(YAXIS)}
 XAXIS_BACK = {ch: i for i, ch in enumerate(XAXIS)}
 
+NUMBERS = set('0123456789')
+
 
 BOARD_SIZE = 12
 NUM_OF_PLAYERS = 2
@@ -21,6 +23,11 @@ def make(cm_normal: str) -> 'CompleteMove':
     the complete move normal notation'''
     return make_cm(*cm_normal.split('/'))
 
+def is_pos_on_border(pos: 'Pos') -> bool:
+    return pos.x in {2, 9} or pos.y in {2, 9}
+
+def is_pos_outside_arena(pos: 'Pos') -> bool:
+    return pos.x < 2 or pos.x > 9 or pos.y < 2 or pos.y > 9
 
 @dataclass
 class Pos:
@@ -38,6 +45,8 @@ class Pos:
     def __str__(self) -> str:
         return f'{XAXIS[self.y]}{YAXIS[self.x]}'
 
+
+INITIAL_PLAYER_POSITIONS = [Pos(3, 4), Pos(8, 7)]
 
 MOVE_DELTAS = [Pos(0, 1), Pos(1, 0), Pos(0, -1), Pos(-1, 0),
             Pos(1, 1), Pos(1, -1), Pos(-1, -1), Pos(-1, 1)]
