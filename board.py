@@ -123,6 +123,10 @@ class Board:
 
     def check_victory(self) -> int | None:
         '''Return an index of a winner or None if game is not terminated'''
+        if not self._get_moves_from_for(self.players_positions[0], 0):
+            return 1
+        if not self._get_moves_from_for(self.players_positions[1], 1):
+            return 0
         if self[self.get_cpp().tup()].is_shot() \
             or not self.get_complete_moves():
             return 1 - self.player_to_move
@@ -207,25 +211,32 @@ class Board:
         return None
 
     def eval_board(self) -> float:
-        '''Evaluates the board. Gives a float score.
+        '''Statically evaluates the board. Returns a float score.
         +1 --- best for the red player;
         -1 --- best for the blue player'''
         if self.victor is not None:
-            return 1 if self.victor == 0 else -1
+            return 1. if self.victor == 0 else -1.
         red_moves = self._get_complete_moves_for(player_id=0)
         blue_moves = self._get_complete_moves_for(player_id=1)
         if self.player_to_move == 0:
             for cm in red_moves: 
-                if cm.shot == self.players_positions[1]: return 1 # if red can win and it's their move
+                if cm.shot == self.players_positions[1]: return 1. # if red can win and it's their move
             ...
         else:
             for cm in blue_moves:
-                if cm.shot == self.players_positions[0]: return -1 # if blue can win and it's their move
+                if cm.shot == self.players_positions[0]: return -1. # if blue can win and it's their move
             ...
+        # eval formula dep on the num of legal moves
         eval_ = (len(red_moves) - len(blue_moves))/(len(blue_moves) + len(red_moves))
-        return eval_ + \
-            abs(eval_) * (-1 if self.player_to_move == 0 else 1) * 0.15 + \
-            -0.1 * is_pos_outside_arena(self.players_positions[0]) + 0.1 * is_pos_outside_arena(self.players_positions[1])
+        # accounting for how far the player is from the edge (the further -- the better)
+        red_dist_to_edge = min_distance_to_edge(self.players_positions[0])
+        blue_dist_to_edge = min_distance_to_edge(self.players_positions[1])
+        return clip(
+            eval_ + \
+            # abs(eval_) * (-1 if self.player_to_move == 0 else 1) * 0.15 + \
+            (red_dist_to_edge - blue_dist_to_edge) * 0.03,
+                -1., 1.
+        )
 
 
 class GameReplay:
