@@ -17,22 +17,26 @@ class PickRandom:
     
     def pick_move(self) -> CompleteMove:
         possible_moves = self.b.get_complete_moves()
+        if not possible_moves:
+            raise exc.GameIsOverException('No moves left: the game is over')
         return random.choice(possible_moves)
 
     def make_move(self):
         if self.b.player_to_move != self.player_id:
             print('This is not my turn!')
             return
-        best_move = self.pick_move()
-        self.b.execute_complete_move(best_move)
-        return best_move
+        move = self.pick_move()
+        self.b.execute_complete_move(move)
+        return move
+
 
 class PickBest:
     '''This algorithm just picks the move which provides the best eval outcome'''
-    def __init__(self, player_id: int, board: Board, randomize: bool = False) -> None:
+    def __init__(self, player_id: int, board: Board, randomize: bool = False, verbose: bool = True) -> None:
         self.player_id = player_id
         self.b = board
         self.randomize = randomize
+        self.verbose = verbose
 
     def pick_move(self) -> CompleteMove:
         possible_moves = self.b.get_complete_moves()
@@ -55,7 +59,8 @@ class PickBest:
                 equivalent_cms.append(cm)
             else:
                 break
-        print('randomizing among', len(equivalent_cms))
+        if self.verbose:
+            print('randomizing among', len(equivalent_cms))
         return random.choice(equivalent_cms)
 
     def make_move(self):
