@@ -233,8 +233,7 @@ class Board:
         blue_dist_to_edge = min_distance_to_edge(self.players_positions[1])
         return clip(
             eval_ + \
-            # abs(eval_) * (-1 if self.player_to_move == 0 else 1) * 0.15 + \
-            (red_dist_to_edge - blue_dist_to_edge) * 0.03,
+            (red_dist_to_edge - blue_dist_to_edge) * 0.05,
                 -1., 1.
         )
 
