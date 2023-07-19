@@ -27,7 +27,7 @@ def make(cm_normal: str) -> 'CompleteMove':
 
 
 def is_pos_on_border(pos: 'Pos') -> bool:
-    return pos.x in {2, 9} or pos.y in {2, 9}
+    return pos.x in {2, 9} and 2 <= pos.y <= 9 or pos.y in {2, 9} and 2 <= pos.x <= 9
 
 
 def is_pos_outside_arena(pos: 'Pos') -> bool:
