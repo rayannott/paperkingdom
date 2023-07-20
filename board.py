@@ -148,6 +148,9 @@ class Board:
         for delta in SHOT_DELTAS + (SHOT_DELTAS_BOUNDARY if is_pos_on_border(shot_from) else []):
             if not 0 <= shot_from.x + delta.x < BOARD_SIZE or not 0 <= shot_from.y + delta.y < BOARD_SIZE:
                 continue
+            if is_pos_in_center(shot_from + delta):
+                # enforces the "center" rule (cannot shoot in the center)
+                continue
             if self[shot_from.x + delta.x, shot_from.y + delta.y].is_empty() or \
                 self[shot_from.x + delta.x, shot_from.y + delta.y].is_player(1-shot_for):
                 shots.append(Pos(shot_from.x + delta.x, shot_from.y + delta.y))

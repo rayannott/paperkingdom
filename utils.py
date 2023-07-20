@@ -34,6 +34,10 @@ def is_pos_outside_arena(pos: 'Pos') -> bool:
     return pos.x < 2 or pos.x > 9 or pos.y < 2 or pos.y > 9
 
 
+def is_pos_in_center(pos: 'Pos') -> bool:
+    return pos.x in {5, 6} and pos.y in {5, 6}
+
+
 def min_distance_to_edge(pos: 'Pos') -> int:
     return min(
         min(BOARD_SIZE - 1 - pos.x, pos.x),
@@ -64,7 +68,7 @@ class Pos:
         return f'{XAXIS[self.y]}{YAXIS[self.x]}'
 
 
-INITIAL_PLAYER_POSITIONS = [Pos(3, 4), Pos(8, 7)]
+INITIAL_PLAYER_POSITIONS = [Pos(3, 3), Pos(8, 8)]
 
 MOVE_DELTAS = [Pos(0, 1), Pos(1, 0), Pos(0, -1), Pos(-1, 0),
             Pos(1, 1), Pos(1, -1), Pos(-1, -1), Pos(-1, 1)]
