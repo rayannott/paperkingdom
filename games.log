@@ -6,3 +6,27 @@ f7/g5 i3/h5, g6/h4 j4/h6, f5/g7 j3/i5, f4/g2 i2/g3, f3/h2 j1/k3, f2/g4 k1/i0, e3
 # a game against the Minimax(depth=3) bot
 e7/f5 h4/g6, f7/g5 i5/k6, g8/h6 j5/k3, h9/i7 j4/i2, g9/ib i3/h1, h8/j7 j2/i4, g7/i8 i1/j3, f6/g4 j1/l0, e5/c6 k2/j0, d6/c4 k1/i0, d7/b6 l2/k0, d8/e6 l3/k5, d9/b8 k4/j6, e9/cb l5/k7, ea/f8 l6/k8, fb/ha l7/k9, eb/ga l8/ka, da/f9 l9/ja, c9/db la/j9, c8/ba kb/ia, c7/b9 jb/i9, b7/a9 r.
 
+[20.07.2023 11:46]
+# a game against the Minimax(depth=2) bot; with gui
+f7/g5 i3/h5, g6/h4 j4/h6, f6/h7 j5/l6, f5/g7 j6/k8, e6/c5 i7/g8, e7/c6 i8/g9, f8/h9 i9/gb, e9/ga ja/hb, d8/ca k9/jb, d7/c9 j8/ia, d6/c8 k7/i6, d5/c7 k6/l4, e4/c3 l5/k3, f3/d2 k4/i5, g3/i2 j3/h2, f2/h1 k2/i1, e1/g0 k1/i0, e0/g1 j1/h0, d1/f0 k0/l2, c1/a0 l1/j0, b1/d0 r.
+
+[20.07.2023 11:58]
+# against the minimax bot
+f7/g5 h2/f0, f6/g4 i2/k0, e5/f3 j2/l3, f5/e3 k2/i1, g6/f4 k1/i0, h5/g3 j1/l2, h6/i4 j0/h1, r.
+
+[20.07.2023 12:03]
+# against the minimax bot
+f7/g5 g2/h4, e6/f4 h2/i4, f5/g3 i3/k4, g4/i3 r.
+
+[20.07.2023 12:07]
+# against the minimax bot
+f9/h7 i3/j1, f8/h9 i4/g5, e7/g8 i5/g4, f6/h5 i6/g7, f5/h6 i7/g6, e6/f4 j8/k6, e5/f7 j9/ha, d6/e4 ja/k8, d7/e9 ia/h8, d8/ea i9/gb, c7/d9 i8/j6, c6/b8 j7/k9, d5/b6 k7/l9, d4/b3 l6/k4, e3/c4 k5/j3, f3/h4 j4/l2, g3/i2 k3/l5, h2/i0 k2/i1, h1/j2 k1/l3, g1/e2 l1/j0, f1/d2 r.
+
+[20.07.2023 12:21]
+# against the minimax bot
+d9/e7 i3/j5, e9/g8 j4/k2, f8/h7 i4/k5, g7/h5 j3/l4, g6/i5 i2/g0, f5/h4 i1/k0, f4/e6 h2/f4, b.
+
+[20.07.2023 12:23]
+# against the pickbest bot
+f7/h6 i3/h5, f6/g4 i4/g5, f5/h4 i5/g6, e5/d7 j6/k4, f4/e6 i7/g8, e4/d6 i8/k9, d5/e7 i9/k8, c6/d8 ha/jb, c7/d9 g9/ea, c8/da fa/db, b7/a9 ga/eb, b6/a8 h9/ib, b5/a7 ia/gb, c4/a5 j9/h8, c3/a1 j8/ka, d3/e1 k7/i6, e3/c2 k6/l8, f3/d2 k5/l7, g3/i2 j4/h2, g2/i1 k3/j1, g1/i0 k2/j0, f1/h0 k1/j3, f0/h1 l1/j2, e0/c1 l2/k0, d0/b1 r.
+
