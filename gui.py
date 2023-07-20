@@ -5,6 +5,7 @@ import pygame
 import pygame_gui
 
 import gui_utils
+from gui_utils import paint
 from board import Board
 from utils import Pos, CompleteMove
 import exceptions as exc
@@ -87,7 +88,7 @@ def main(engine_: Literal['minimax', 'pickbest', 'pickrandom'] | None = None):
                                     board.disable()
                                     g.info()
                             game_info_textbox.set_text(
-                                    gui_utils.paint(g.get_ngd(), '#BAE2CB')
+                                    f'{paint("BLUE", "#0C6EF2") if g.player_to_move else paint("RED", "#F2350C")} to move<br>{paint(g.get_ngd(), "#BAE2CB")}'
                                 )
                         gui_utils.update_buttons(buttons, manager, board, g, g.player_to_move)
 

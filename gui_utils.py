@@ -67,7 +67,7 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
         }
     )
     game_info_textbox = pygame_gui.elements.UITextBox(
-        '',
+        f'{paint("RED", "#F2350C")} to move<br>',
         relative_rect=pygame.Rect(button_margin, button_margin*2 + button_size_y, button_size_x*2 + button_margin, 400),
         manager=manager,
         container=left_board,
@@ -103,12 +103,18 @@ def generate_field(manager, board, game, current_player):
                 if current_player == cell.player_id:
                     butt.disable()
             else:
+                if indrow in {2, 9} and 2 <= indcell <= 9 or indcell in {2, 9} and 2 <= indrow <= 9:
+                    empty_cell_obj_id = 'arena_border'
+                elif indrow in {5, 6} and indcell in {5, 6}:
+                    empty_cell_obj_id = 'arena_center'
+                else:
+                    empty_cell_obj_id = None
                 butt = pygame_gui.elements.UIButton(
                     relative_rect=rect,
                     text='',
                     manager=manager,
                     container=board,
-                    object_id='arena_border' if indrow in {2, 9} and 2 <= indcell <= 9 or indcell in {2, 9} and 2 <= indrow <= 9 else None
+                    object_id=empty_cell_obj_id
                 )
             this_row.append(butt)
         buttons.append(this_row)
