@@ -2,6 +2,13 @@ import pygame
 import pygame_gui
 
 
+def paint(s: str, color: str = '#FFFFFF', size=4):
+    '''
+    Returns html-colored with given color string s
+    '''
+    return f'<font color={color} size={size}>{s}</font>'
+
+
 def init_layout(width, height, l_margin, r_margin, button_margin):
     pygame.init()
 
@@ -32,36 +39,10 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
     )
     total_empty = button_margin * 3
     button_size_x = (left_margin - total_empty) / 2
-    button_size_y = 20
-    swap_button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect(button_margin, button_margin, button_size_x, button_size_y),
-        text='Swap',
-        manager=manager,
-        container=left_board,
-        object_id='butt',
-        anchors={
-            'left': 'left',
-            'right': 'right',
-            'top': 'top',
-            'bottom': 'bottom'
-        }
-    )
-    tetra_button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect(left_margin - button_margin - button_size_x, button_margin, button_size_x, button_size_y),
-        text='Tetra',
-        manager=manager,
-        container=left_board,
-        object_id='butt',
-        anchors={
-            'left': 'left',
-            'right': 'right',
-            'top': 'top',
-            'bottom': 'bottom'
-        }
-    )
+    button_size_y = 40
     restart_button = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect(button_margin, 2 * button_margin + button_size_y, button_size_x, button_size_y),
-        text='Restart',
+        relative_rect=pygame.Rect(button_margin, button_margin, button_size_x, button_size_y),
+        text='RESTART',
         manager=manager,
         container=left_board,
         object_id='restart',
@@ -72,7 +53,33 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
             'bottom': 'bottom'
         }
     )
-    return window_surface, manager, clock, base_panel, board, left_board, swap_button, tetra_button, restart_button
+    save_game_button = pygame_gui.elements.UIButton(
+        relative_rect=pygame.Rect(button_margin*2 + button_size_x, button_margin, button_size_x, button_size_y),
+        text='SAVE',
+        manager=manager,
+        container=left_board,
+        object_id='save',
+        anchors={
+            'left': 'left',
+            'right': 'right',
+            'top': 'top',
+            'bottom': 'bottom'
+        }
+    )
+    game_info_textbox = pygame_gui.elements.UITextBox(
+        '',
+        relative_rect=pygame.Rect(button_margin, button_margin*2 + button_size_y, button_size_x*2 + button_margin, 400),
+        manager=manager,
+        container=left_board,
+        object_id='info_textbox',
+        anchors={
+            'left': 'left',
+            'right': 'right',
+            'top': 'top',
+            'bottom': 'bottom'
+        }
+    )
+    return window_surface, manager, clock, base_panel, board, left_board, restart_button, save_game_button, game_info_textbox
 
 
 def generate_field(manager, board, game, current_player):
@@ -88,7 +95,7 @@ def generate_field(manager, board, game, current_player):
             if cell.is_player():
                 butt = pygame_gui.elements.UIButton(
                     relative_rect=rect,
-                    text=str(cell.player_id),
+                    text='',
                     manager=manager,
                     container=board,
                     object_id=f'player{cell.player_id}'
@@ -136,7 +143,7 @@ def update_buttons(buttons, manager, board, game, current_player):
             elif cell.is_shot():
                 kill_create_button(buttons, row_id, col_id, '', manager, board, 'shot', True)
             elif cell.is_player():
-                kill_create_button(buttons, row_id, col_id, str(cell.player_id)+'.',
+                kill_create_button(buttons, row_id, col_id, '',
                                     manager, board, f'player{cell.player_id}', current_player == cell.player_id)
 
 

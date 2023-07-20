@@ -37,7 +37,7 @@
   },
   "board.shot":{
     "colours": {
-      "disabled_bg": "#454560",
+      "disabled_bg": "#484444",
       "disabled_text": "#AAAAAA"
     }
   },
@@ -58,7 +58,7 @@
   "board.arena_border": {
     "colours": {
       "normal_bg": "#A9A9A9",
-      "disabled_bg": "#1D58A6",
+      "disabled_bg": "#AAAAAA",
       "disabled_text": "#695400"
     }
   },
