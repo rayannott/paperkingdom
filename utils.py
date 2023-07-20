@@ -40,6 +40,8 @@ def min_distance_to_edge(pos: 'Pos') -> int:
         min(BOARD_SIZE - 1 - pos.y, pos.y)
     )
 
+def dist_two_pos(p1: 'Pos', p2: 'Pos') -> float:
+    return ((p1.x - p2.x)**2 + (p1.y - p2.y)**2)**.5
 
 def clip(value: float, min_: float, max_: float) -> float:
     return max(min_, min(max_, value))
