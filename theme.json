@@ -2,7 +2,7 @@
   "defaults": {
     "colours": {
       "normal_bg": "#F2E8E8",
-      "hovered_bg": "#35393e",
+      "hovered_bg": "#A0A0A2",
       "disabled_bg": "#25292e",
       "selected_bg": "#193754",
       "dark_bg": "#15191e",
@@ -37,7 +37,7 @@
   },
   "board.shot":{
     "colours": {
-      "disabled_bg": "#484444",
+      "disabled_bg": "#3B3B3B",
       "disabled_text": "#AAAAAA"
     }
   },
@@ -57,8 +57,15 @@
   },
   "board.arena_border": {
     "colours": {
-      "normal_bg": "#A9A9A9",
+      "normal_bg": "#BEBDBD",
       "disabled_bg": "#AAAAAA",
+      "disabled_text": "#695400"
+    }
+  },
+  "board.arena_center": {
+    "colours": {
+      "normal_bg": "#ACF3C9",
+      "disabled_bg": "#72A788",
       "disabled_text": "#695400"
     }
   },
