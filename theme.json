@@ -6,10 +6,10 @@
   },
   "defaults": {
     "colours": {
-      "normal_bg": "#F2E8E8",
-      "hovered_bg": "#A0A0A2",
+      "normal_bg": "#3E4650",
+      "hovered_bg": "#FFFFFF",
       "disabled_bg": "#25292e",
-      "selected_bg": "#193754",
+      "selected_bg": "#000000",
       "dark_bg": "#15191e",
       "normal_text": "#2E945A",
       "hovered_text": "#FFFFFF",
@@ -42,34 +42,34 @@
   },
   "board.shot":{
     "colours": {
-      "disabled_bg": "#3B3B3B",
+      "disabled_bg": "#0D0D0D",
       "disabled_text": "#AAAAAA"
     }
   },
   "board.player0": {
     "colours": {
-      "normal_bg": "#F2350C",
-      "disabled_bg": "#CA4A30",
-      "disabled_text": "#695400"
+      "normal_bg": "#F83208",
+      "disabled_bg": "#CE4023",
+      "disabled_text": "#E14424"
     }
   },
   "board.player1": {
     "colours": {
-      "normal_bg": "#0C6EF2",
-      "disabled_bg": "#1D58A6",
+      "normal_bg": "#0A6FF7",
+      "disabled_bg": "#196CDA",
       "disabled_text": "#695400"
     }
   },
   "board.arena_border": {
     "colours": {
-      "normal_bg": "#BEBDBD",
+      "normal_bg": "#404C5A",
       "disabled_bg": "#AAAAAA",
       "disabled_text": "#695400"
     }
   },
   "board.arena_center": {
     "colours": {
-      "normal_bg": "#ACF3C9",
+      "normal_bg": "#3A5043",
       "disabled_bg": "#72A788",
       "disabled_text": "#695400"
     }
