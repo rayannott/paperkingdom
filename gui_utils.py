@@ -1,15 +1,25 @@
+import pathlib
 import pygame
 import pygame_gui
 
 
+pygame.font.init()
+# TODO add new fonts
+assets_dir = pathlib.Path('assets'); dir_name = pathlib.Path('font.ttf')
+FONT_SMALL = pygame.font.Font(assets_dir/dir_name, 14)
+FONT_NORM = pygame.font.Font(assets_dir/dir_name, 20)
+FONT_BIG = pygame.font.Font(assets_dir/dir_name, 34)
+FONT_HUGE = pygame.font.Font(assets_dir/dir_name, 50)
+
+
 def paint(s: str, color: str = '#FFFFFF', size=4):
     '''
-    Returns html-colored with given color string s
+    Returns html-colored string s
     '''
     return f'<font color={color} size={size}>{s}</font>'
 
 
-def init_layout(width, height, l_margin, r_margin, button_margin):
+def init_layout(width, height, button_margin):
     pygame.init()
 
     pygame.display.set_caption('Quick Start')
@@ -22,15 +32,29 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
         manager=manager,
         object_id='base'
     )
-    board_size = min(width - l_margin - r_margin, height)
+    board_size = 0.9 * height
     left_margin = (width - board_size) // 2
     top_margin = (height - board_size) // 2
     board = pygame_gui.elements.UIPanel(
-        relative_rect=pygame.Rect((left_margin, top_margin), (board_size, board_size)),
+        relative_rect=pygame.Rect((left_margin + 40, top_margin), (board_size, board_size)),
         manager=manager,
         container=base_panel,
         object_id='board'
     )
+
+    # coordinate labels:
+    label_rect = pygame.Rect((0, 0), (25, 25))
+    w, h = board.get_container().get_rect().size
+    TILE_SIZE = w // 12
+    label_rect.center = (board.get_relative_rect().bottomleft[0] + TILE_SIZE//2, board.get_relative_rect().bottomleft[1] + 10)
+    # TODO: show coordinate labels
+    label = pygame_gui.elements.UILabel(
+        relative_rect=label_rect,
+        text='A',
+        manager=manager,
+        container=base_panel
+    )
+
     left_board = pygame_gui.elements.UIPanel(
         relative_rect=pygame.Rect((0, 0), (left_margin, height)),
         manager=manager,
@@ -40,6 +64,8 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
     total_empty = button_margin * 3
     button_size_x = (left_margin - total_empty) / 2
     button_size_y = 40
+    textbox_width = button_size_x*2 + button_margin
+    info_textbox_height = 400
     restart_button = pygame_gui.elements.UIButton(
         relative_rect=pygame.Rect(button_margin, button_margin, button_size_x, button_size_y),
         text='RESTART',
@@ -68,7 +94,7 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
     )
     game_info_textbox = pygame_gui.elements.UITextBox(
         f'{paint("RED", "#F2350C")} to move<br>',
-        relative_rect=pygame.Rect(button_margin, button_margin*2 + button_size_y, button_size_x*2 + button_margin, 400),
+        relative_rect=pygame.Rect(button_margin, button_margin*2 + button_size_y, textbox_width, info_textbox_height),
         manager=manager,
         container=left_board,
         object_id='info_textbox',
@@ -79,7 +105,20 @@ def init_layout(width, height, l_margin, r_margin, button_margin):
             'bottom': 'bottom'
         }
     )
-    return window_surface, manager, clock, base_panel, board, left_board, restart_button, save_game_button, game_info_textbox
+    game_logs_textbox = pygame_gui.elements.UITextBox(
+        f'',
+        relative_rect=pygame.Rect(button_margin, button_margin*3 + button_size_y + info_textbox_height, textbox_width, info_textbox_height//4),
+        manager=manager,
+        container=left_board,
+        object_id='log_textbox',
+        anchors={
+            'left': 'left',
+            'right': 'right',
+            'top': 'top',
+            'bottom': 'bottom'
+        }
+    )
+    return window_surface, manager, clock, base_panel, board, left_board, restart_button, save_game_button, game_info_textbox, game_logs_textbox
 
 
 def generate_field(manager, board, game, current_player):

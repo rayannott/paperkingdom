@@ -11,8 +11,8 @@ from utils import Pos, CompleteMove
 import exceptions as exc
 from engine import PickBest, PickRandom, Minimax
 
-WIDTH = 1000
-HEIGHT = 600
+WIDTH = 1200
+HEIGHT = 800
 LMARGIN = 200
 RMARGIN = 200
 BMARGIN = 10
@@ -21,7 +21,7 @@ def main(engine_: Literal['minimax', 'pickbest', 'pickrandom'] | None = None):
     g = Board()
     move, shoot = None, None
     (window_surface, manager, clock, base_panel, board, left_board,
-        restart_button, save_game_button, game_info_textbox) = gui_utils.init_layout(WIDTH, HEIGHT, LMARGIN, RMARGIN, BMARGIN)
+        restart_button, save_game_button, game_info_textbox, game_logs_textbox) = gui_utils.init_layout(WIDTH, HEIGHT, BMARGIN)
     buttons = gui_utils.generate_field(manager, board, g, g.player_to_move)
 
     if engine_ == 'minimax':
@@ -43,8 +43,9 @@ def main(engine_: Literal['minimax', 'pickbest', 'pickrandom'] | None = None):
                         g = Board()
                         move, shoot = None, None
                         (window_surface, manager, clock, base_panel, board, left_board,
-                            restart_button, save_game_button, game_info_textbox) = gui_utils.init_layout(WIDTH, HEIGHT, LMARGIN, RMARGIN, BMARGIN)
+                            restart_button, save_game_button, game_info_textbox, game_logs_textbox) = gui_utils.init_layout(WIDTH, HEIGHT, BMARGIN)
                         buttons = gui_utils.generate_field(manager, board, g, g.player_to_move)
+                        #! fix: on restart always creating the PickBest engine
                         engine = PickBest(player_id=1, board=g, randomize=True, verbose=True)
                         continue
                     elif event.ui_element == save_game_button:
@@ -80,7 +81,7 @@ def main(engine_: Literal['minimax', 'pickbest', 'pickrandom'] | None = None):
                         else:
                             if engine_:
                                 try:
-                                    engine.make_move()
+                                    engine.make_move() # type: ignore
                                 except exc.GameIsOverException as e:
                                     print(e)
                                 g.info()

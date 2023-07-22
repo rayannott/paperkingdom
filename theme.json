@@ -76,5 +76,20 @@
   },
   "base.leftboard":{
     "prototype": "base"
-  }
+  },
+  "label":
+    {
+        "colours":
+        {
+            "dark_bg": "#F2E8E8",
+            "normal_text": "#FFFFFF"
+        },
+        "font":
+        {
+            "name": "cambria",
+            "size": "14",
+            "bold": "0",
+            "italic": "0"
+        }
+    }
 }
