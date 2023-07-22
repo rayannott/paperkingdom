@@ -1,4 +1,9 @@
 {
+  "@centered": {
+    "misc": {
+      "text_horiz_alignment": "center"
+    }
+  },
   "defaults": {
     "colours": {
       "normal_bg": "#F2E8E8",
@@ -6,7 +11,7 @@
       "disabled_bg": "#25292e",
       "selected_bg": "#193754",
       "dark_bg": "#15191e",
-      "normal_text": "#1f5737",
+      "normal_text": "#2E945A",
       "hovered_text": "#FFFFFF",
       "selected_text": "#FFFFFF",
       "disabled_text": "#6d736f",
@@ -81,13 +86,12 @@
     {
         "colours":
         {
-            "dark_bg": "#F2E8E8",
             "normal_text": "#FFFFFF"
         },
         "font":
         {
-            "name": "cambria",
-            "size": "14",
+            "name": "fira_code",
+            "size": "16",
             "bold": "0",
             "italic": "0"
         }

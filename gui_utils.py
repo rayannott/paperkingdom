@@ -43,17 +43,36 @@ def init_layout(width, height, button_margin):
     )
 
     # coordinate labels:
-    label_rect = pygame.Rect((0, 0), (25, 25))
+    label_rect = pygame.Rect((0, 0), (30, 30))
     w, h = board.get_container().get_rect().size
     TILE_SIZE = w // 12
-    label_rect.center = (board.get_relative_rect().bottomleft[0] + TILE_SIZE//2, board.get_relative_rect().bottomleft[1] + 10)
-    # TODO: show coordinate labels
-    label = pygame_gui.elements.UILabel(
-        relative_rect=label_rect,
-        text='A',
-        manager=manager,
-        container=base_panel
-    )
+    board_rect = board.get_relative_rect()
+    # horisontal
+    for i, ch in enumerate('abcdefghijkl'):
+        label_rect.center = (
+            board_rect.bottomleft[0] + TILE_SIZE//2 + 5 + i*(TILE_SIZE + 0.67), # type: ignore
+            board_rect.bottomleft[1] + 15
+        )
+        label = pygame_gui.elements.UILabel(
+            relative_rect=label_rect,
+            text=ch.upper(),
+            manager=manager,
+            container=base_panel,
+            object_id='@centered'
+        )
+    # vertical
+    for i, ch in enumerate('BA9876543210'):
+        label_rect.center = (
+            board_rect.topleft[0] - 15, # type: ignore
+            board_rect.topleft[1] + TILE_SIZE//2 + 5 + i*(TILE_SIZE + 0.65) # type: ignore
+        )
+        label = pygame_gui.elements.UILabel(
+            relative_rect=label_rect,
+            text=ch,
+            manager=manager,
+            container=base_panel,
+            object_id='@centered'
+        )
 
     left_board = pygame_gui.elements.UIPanel(
         relative_rect=pygame.Rect((0, 0), (left_margin, height)),
